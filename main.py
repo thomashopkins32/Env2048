@@ -72,7 +72,7 @@ def printBoard(board):
 
 def main():
     root = tk.Tk()
-    window(root).pack(fill="both", expand=True)
+    Window(root).pack(fill="both", expand=True)
     root.mainloop()
     board = [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]]
     for i in range(0,2,1):
