@@ -1,6 +1,40 @@
 from random import randint
-from window import Window
-import tkinter as tk
+
+def new_game():
+    matrix = []
+    for i in range(4):
+        matrix.append([0]*4)
+    return matrix
+
+def add_two(matrix):
+    x = randint(0, len(matrix)-1)
+    y = randint(0, len(matrix)-1)
+    while(matrix[x][y] != 0):
+        x = randint(0, len(matrix)-1)
+        y = randint(0, len(matrix)-1)
+    matrix[x][y] = 2
+    return matrix
+
+def game_state(matrix):
+    for i in range(len(matrix)):
+        for j in range(len(matrix)):
+            if matrix[i][j] == 2048:
+                return "win"
+    for i in range(len(matrix)-1):
+        for j in range(len(matrix[0])-1):
+            if matrix[i][j] == matrix[i+1][j] or matrix[i][j] == matrix[i][j+1]:
+                return ""
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if matrix[i][j] == 0:
+                return ""
+    for i in range(len(matrix)-1):
+        if matrix[len(matrix)-1][k] == matrix[len(matrix)-1][k+1]:
+            return ""
+        if matrix[k][len(matrix)-1] == matrix[k+1][len(matrix)-1]:
+            return ""
+    return "lose"
+
 
 def right(board):
     for i in range(0, 4, 1):
@@ -16,6 +50,7 @@ def right(board):
                         board[i][k] = 0
                     else:
                         break
+    return board
 
 def left(board):
     for i in range(0, 4, 1):
@@ -31,6 +66,7 @@ def left(board):
                         board[i][k] = 0
                     else:
                         break
+    return board
 
 def up(board):
     for j in range(0, 4, 1):
@@ -46,6 +82,7 @@ def up(board):
                         board[k][j] = 0
                     else:
                         break
+    return board
 
 def down(board):
     for j in range(0, 4, 1):
@@ -61,48 +98,4 @@ def down(board):
                         board[k][j] = 0
                     else:
                         break
-
-def printBoard(board):
-    for i in board:
-        print("\n")
-        for j in i:
-            print("%5d " % j, end =" ")
-    print("\n")
-
-
-def main():
-    root = tk.Tk()
-    Window(root).pack(fill="both", expand=True)
-    root.mainloop()
-    board = [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]]
-    for i in range(0,2,1):
-        firstI = randint(0,3)
-        firstJ = randint(0,3)
-        if board[firstI][firstJ] == 0:
-            board[firstI][firstJ] = 2
-    while True:
-        printBoard(board)
-        control = input("Pick a direction (type exit to end game): ")
-        if control == "r" or control == "right":
-            right(board)
-        elif control == "l" or control == "left":
-            left(board)
-        elif control == "u" or control == "up":
-            up(board)
-        elif control == "d" or control == "down":
-            down(board)
-        elif control == "exit":
-            break
-        else:
-            print("Try again!")
-            continue
-        found = False
-        while not found:
-            i = randint(0,3)
-            j = randint(0,3)
-            if(board[i][j] == 0):
-                board[i][j] = 2
-                found = True
-
-if __name__ == '__main__':
-    main()
+    return board
