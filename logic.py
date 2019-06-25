@@ -1,4 +1,4 @@
-from random import randint
+from numpy import random
 
 def new_game():
     matrix = []
@@ -6,13 +6,16 @@ def new_game():
         matrix.append([0]*4)
     return matrix
 
-def add_two(matrix):
-    x = randint(0, len(matrix)-1)
-    y = randint(0, len(matrix)-1)
-    while(matrix[x][y] != 0):
-        x = randint(0, len(matrix)-1)
-        y = randint(0, len(matrix)-1)
-    matrix[x][y] = 2
+def add_new(matrix):
+    random.seed(123)
+    i = random.randint(0, 4)
+    j = random.randint(0, 4)
+    while matrix[i][j] != 0:
+        i = random.randint(0, 4)
+        j = random.randint(0, 4)
+    distribution = [2] * 9 + [4]
+    value = random.choice(distribution)
+    matrix[i][j] = value
     return matrix
 
 def game_state(matrix):
