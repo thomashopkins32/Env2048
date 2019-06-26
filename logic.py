@@ -7,7 +7,6 @@ def new_game():
     return matrix
 
 def add_new(matrix):
-    random.seed(123)
     i = random.randint(0, 4)
     j = random.randint(0, 4)
     while matrix[i][j] != 0:
@@ -17,27 +16,6 @@ def add_new(matrix):
     value = random.choice(distribution)
     matrix[i][j] = value
     return matrix
-
-def game_state(matrix):
-    for i in range(len(matrix)):
-        for j in range(len(matrix)):
-            if matrix[i][j] == 2048:
-                return "win"
-    for i in range(len(matrix)-1):
-        for j in range(len(matrix[0])-1):
-            if matrix[i][j] == matrix[i+1][j] or matrix[i][j] == matrix[i][j+1]:
-                return ""
-    for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
-            if matrix[i][j] == 0:
-                return ""
-    for i in range(len(matrix)-1):
-        if matrix[len(matrix)-1][k] == matrix[len(matrix)-1][k+1]:
-            return ""
-        if matrix[k][len(matrix)-1] == matrix[k+1][len(matrix)-1]:
-            return ""
-    return "lose"
-
 
 def right(board):
     for i in range(0, 4, 1):
