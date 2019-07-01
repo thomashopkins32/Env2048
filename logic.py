@@ -2,6 +2,7 @@ from numpy import random
 
 def new_game():
     matrix = []
+    random.seed(41)
     for i in range(4):
         matrix.append([0]*4)
     return matrix
@@ -16,6 +17,36 @@ def add_new(matrix):
     value = random.choice(distribution)
     matrix[i][j] = value
     return matrix
+
+def game_state(matrix):
+    fill_count = 0
+    check_failure = False
+    for i in range(4):
+        if 2048 in matrix[i]:
+            return 'win'
+        if 0 not in matrix[i]:
+            fill_count += 1
+    if fill_count == 4:
+        check_failure = True
+    else:
+        return 'continue'
+    if check_failure:
+        tmp = [x[:] for x in matrix]
+        matrix = right(matrix)
+        matrix = left(matrix)
+        matrix = up(matrix)
+        matrix = down(matrix)
+        if tmp == matrix:
+            return 'lose'
+    return 'continue'
+
+def score(matrix):
+    score = 0
+    for i in range(4):
+        for j in range(4):
+            score += matrix[i][j]
+    return score
+
 
 def right(board):
     for i in range(0, 4, 1):

@@ -13,6 +13,7 @@ class Window(tk.Frame):
         self.master = master
         self.init_window()
 
+        self.score_raw = 0
         self.matrix = logic.new_game()
         self.matrix = logic.add_new(self.matrix)
         self.matrix = logic.add_new(self.matrix)
@@ -70,9 +71,12 @@ class Window(tk.Frame):
                     self.labels[i][j].configure(text='', bg='#9e948a')
                 else:
                     self.labels[i][j].configure(text=str(new_value), bg=COLORS[new_value])
+        score_text = 'Score: ' + str(self.score_raw)
+        self.score.configure(text=score_text)
         self.update_idletasks()
 
     def key_pressed(self, event):
+        tmp = [x[:] for x in self.matrix]
         if event.keysym == 'Right':
             self.matrix = logic.right(self.matrix)
         elif event.keysym == 'Left':
@@ -81,8 +85,15 @@ class Window(tk.Frame):
             self.matrix = logic.down(self.matrix)
         elif event.keysym == 'Up':
             self.matrix = logic.up(self.matrix)
-        self.matrix = logic.add_new(self.matrix)
-        self.update_labels()
+        if tmp != self.matrix:
+            self.matrix = logic.add_new(self.matrix)
+            self.score_raw = logic.score(self.matrix)
+            self.update_labels()
+            game_state = logic.game_state(self.matrix)
+            if game_state == 'win':
+                print('You win!')
+            elif game_state == 'lose':
+                print('You lose!')
 
 root = tk.Tk()
 window = Window(master=root)
