@@ -1,4 +1,6 @@
 import tkinter as tk
+from player import *
+from numpy import random
 import logic
 
 GEOMETRY = '800x1000'
@@ -18,6 +20,7 @@ class Window(tk.Frame):
         self.matrix = logic.add_new(self.matrix)
         self.matrix = logic.add_new(self.matrix)
         self.update_labels()
+        self.simulate()
 
     def init_window(self):
         self.master.geometry(GEOMETRY)
@@ -45,6 +48,38 @@ class Window(tk.Frame):
         for i in range(len(layout)):
             for j in range(len(layout[i])):
                 layout[i][j].grid(row=i, column=j, sticky='nsew')
+
+    def simulate(self):
+        win = False
+        population_size = 100
+        population = []
+        generation = 1
+        self.update_gen(generation)
+        for i in range(population_size):
+            chrom = Player.create_genome()
+            population.append(Player(chrom))
+        while not win:
+            population = sorted(population, key=lambda x: x.fitness)
+            if population[0].outcome == 'win':
+                win = True
+                break
+            new_generation = []
+            sample = int((10*population_size)/100)
+            new_generation.extend(population[:sample])
+            sample = int((90*population_size)/100)
+            for i in range(sample):
+                parent1 = random.choice(population[:50])
+                parent2 = random.choice(population[:50])
+                child = parent1.mate(parent2)
+                new_generation.append(child)
+            population = new_generation
+            self.update_matrix(population[0].game)
+            self.score_raw = population[0].fitness
+            self.update_labels()
+            output_string = 'Generation: %-4s Fitness: %-8s' % (generation, population[0].fitness)
+            print(output_string)
+            generation += 1
+            self.update_gen(generation)
 
     def create_header_widgets(self, header):
         self.score = tk.Label(header, text='Score: ', anchor='w', font=('Helvetica', 18), bg='#92877d')

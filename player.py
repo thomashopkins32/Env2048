@@ -10,10 +10,13 @@ class Player(object):
         self.game = logic.add_new(self.game)
         self.outcome = self.simulate()
 
+    @classmethod
     def mutate(self):
-        gene = random.choice(self.genes)
+        genes = [i for i in 'LURD']
+        gene = random.choice(genes)
         return gene
 
+    @classmethod
     def create_genome(self):
         max_genes = 10000
         return [self.mutate() for i in range(max_genes)]
@@ -38,7 +41,6 @@ class Player(object):
                 game_state = logic.game_state(self.game)
                 if game_state != 'continue':
                     break
-        self.chromosome = self.chromosome[:count]
         return game_state
 
     def mate(self, other):

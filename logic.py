@@ -41,11 +41,16 @@ def game_state(matrix):
     return 'continue'
 
 def score(matrix):
-    score = 0
+    max_tile = 0
+    sum = 0
     for i in range(4):
         for j in range(4):
-            score += matrix[i][j]
+            if matrix[i][j] > max_tile:
+                max_tile = matrix[i][j]
+            sum += matrix[i][j]
+    score = 10*max_tile + sum
     return score
+
 
 def right(board):
     for i in range(0, 4, 1):
