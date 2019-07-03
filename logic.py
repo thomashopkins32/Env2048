@@ -47,7 +47,6 @@ def score(matrix):
             score += matrix[i][j]
     return score
 
-
 def right(board):
     for i in range(0, 4, 1):
         for j in range(3, 0, -1):

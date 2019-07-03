@@ -22,7 +22,7 @@ class Window(tk.Frame):
     def init_window(self):
         self.master.geometry(GEOMETRY)
         self.master.title('2048')
-        self.master.bind('<Key>', self.key_pressed)
+        #self.master.bind('<Key>', self.key_pressed)
         self.header = tk.Frame(self.master, bg='#92877d')
         self.create_header_widgets(self.header)
 
@@ -75,26 +75,31 @@ class Window(tk.Frame):
         self.score.configure(text=score_text)
         self.update_idletasks()
 
-    def key_pressed(self, event):
-        tmp = [x[:] for x in self.matrix]
-        if event.keysym == 'Right':
-            self.matrix = logic.right(self.matrix)
-        elif event.keysym == 'Left':
-            self.matrix = logic.left(self.matrix)
-        elif event.keysym == 'Down':
-            self.matrix = logic.down(self.matrix)
-        elif event.keysym == 'Up':
-            self.matrix = logic.up(self.matrix)
-        if tmp != self.matrix:
-            self.matrix = logic.add_new(self.matrix)
-            self.score_raw = logic.score(self.matrix)
-            self.update_labels()
-            game_state = logic.game_state(self.matrix)
-            if game_state == 'win':
-                print('You win!')
-            elif game_state == 'lose':
-                print('You lose!')
+    def update_gen(self, gen):
+        gen_text = 'Generation: ' + str(gen)
+        self.gen.configure(text=gen_text)
+        self.update_idletasks()
 
-root = tk.Tk()
-window = Window(master=root)
-window.mainloop()
+    def update_matrix(self, new_matrix):
+        self.matrix = new_matrix
+
+
+    # def key_pressed(self, event):
+    #     tmp = [x[:] for x in self.matrix]
+    #     if event.keysym == 'Right':
+    #         self.matrix = logic.right(self.matrix)
+    #     elif event.keysym == 'Left':
+    #         self.matrix = logic.left(self.matrix)
+    #     elif event.keysym == 'Down':
+    #         self.matrix = logic.down(self.matrix)
+    #     elif event.keysym == 'Up':
+    #         self.matrix = logic.up(self.matrix)
+    #     if tmp != self.matrix:
+    #         self.matrix = logic.add_new(self.matrix)
+    #         self.score_raw = logic.score(self.matrix)
+    #         self.update_labels()
+    #         game_state = logic.game_state(self.matrix)
+    #         if game_state == 'win':
+    #             print('You win!')
+    #         elif game_state == 'lose':
+    #             print('You lose!')
