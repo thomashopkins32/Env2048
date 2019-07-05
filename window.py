@@ -51,33 +51,34 @@ class Window(tk.Frame):
 
     def simulate(self):
         win = False
-        population_size = 100
+        population_size = 800
         population = []
         generation = 1
         self.update_gen(generation)
         for i in range(population_size):
-            chrom = Player.create_genome()
-            population.append(Player(chrom))
+            population.append(Player(''))
         while not win:
-            population = sorted(population, key=lambda x: x.fitness)
-            if population[0].outcome == 'win':
-                win = True
-                break
-            new_generation = []
-            sample = int((10*population_size)/100)
-            new_generation.extend(population[:sample])
-            sample = int((90*population_size)/100)
-            for i in range(sample):
-                parent1 = random.choice(population[:50])
-                parent2 = random.choice(population[:50])
-                child = parent1.mate(parent2)
-                new_generation.append(child)
-            population = new_generation
+            population = sorted(population, key=lambda x: x.fitness, reverse=True)
             self.update_matrix(population[0].game)
             self.score_raw = population[0].fitness
             self.update_labels()
             output_string = 'Generation: %-4s Fitness: %-8s' % (generation, population[0].fitness)
             print(output_string)
+            if population[0].outcome == 'win':
+                win = True
+                break
+            new_generation = []
+            sample = int((5*population_size)/100)
+            # problem performing elitism
+            for i in population[:sample+1]:
+                new_generation.append(i)
+            sample = int((95*population_size)/100)
+            for i in range(sample):
+                parent1 = random.choice(population[:400])
+                parent2 = random.choice(population[:400])
+                child = parent1.mate(parent2)
+                new_generation.append(child)
+            population = new_generation
             generation += 1
             self.update_gen(generation)
 
@@ -117,24 +118,3 @@ class Window(tk.Frame):
 
     def update_matrix(self, new_matrix):
         self.matrix = new_matrix
-
-
-    # def key_pressed(self, event):
-    #     tmp = [x[:] for x in self.matrix]
-    #     if event.keysym == 'Right':
-    #         self.matrix = logic.right(self.matrix)
-    #     elif event.keysym == 'Left':
-    #         self.matrix = logic.left(self.matrix)
-    #     elif event.keysym == 'Down':
-    #         self.matrix = logic.down(self.matrix)
-    #     elif event.keysym == 'Up':
-    #         self.matrix = logic.up(self.matrix)
-    #     if tmp != self.matrix:
-    #         self.matrix = logic.add_new(self.matrix)
-    #         self.score_raw = logic.score(self.matrix)
-    #         self.update_labels()
-    #         game_state = logic.game_state(self.matrix)
-    #         if game_state == 'win':
-    #             print('You win!')
-    #         elif game_state == 'lose':
-    #             print('You lose!')

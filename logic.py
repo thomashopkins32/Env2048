@@ -2,7 +2,6 @@ from numpy import random
 
 def new_game():
     matrix = []
-    random.seed(41)
     for i in range(4):
         matrix.append([0]*4)
     return matrix
@@ -40,15 +39,27 @@ def game_state(matrix):
             return 'lose'
     return 'continue'
 
-def score(matrix):
-    max_tile = 0
+def is_edge(i, j):
+    if i == 0 or j == 0 or i == 3 or j == 3:
+        return True
+    return False
+
+def calc_score(score):
     sum = 0
+    while score != 2 and score != 0:
+        sum += score
+        score = score/2
+    return sum
+
+def score(matrix):
+    score = 0
+    flat = [x for y in matrix for x in y]
+    flat = sorted(flat, reverse=True)
     for i in range(4):
         for j in range(4):
-            if matrix[i][j] > max_tile:
-                max_tile = matrix[i][j]
-            sum += matrix[i][j]
-    score = 10*max_tile + sum
+            if matrix[i][j] == flat[0] and is_edge(i, j):
+                score += 5
+            score += calc_score(matrix[i][j])
     return score
 
 
