@@ -1,4 +1,4 @@
-from numpy import random
+from constants import *
 
 def new_game():
     matrix = []
@@ -6,14 +6,14 @@ def new_game():
         matrix.append([0]*4)
     return matrix
 
-def add_new(matrix):
-    i = random.randint(0, 4)
-    j = random.randint(0, 4)
+def add_new(matrix, r):
+    i = r.randint(0, 4)
+    j = r.randint(0, 4)
     while matrix[i][j] != 0:
-        i = random.randint(0, 4)
-        j = random.randint(0, 4)
+        i = r.randint(0, 4)
+        j = r.randint(0, 4)
     distribution = [2] * 9 + [4]
-    value = random.choice(distribution)
+    value = r.choice(distribution)
     matrix[i][j] = value
     return matrix
 
@@ -53,13 +53,17 @@ def calc_score(score):
 
 def score(matrix):
     score = 0
+    boost = True
     flat = [x for y in matrix for x in y]
     flat = sorted(flat, reverse=True)
     for i in range(4):
         for j in range(4):
-            if matrix[i][j] == flat[0] and is_edge(i, j):
-                score += 5
+            if matrix[i][j] == flat[0] and is_edge(i, j) and boost:
+                score += 30
+                # increase fitness for consecutive highest values
+                boost = False
             score += calc_score(matrix[i][j])
+    score += 2*flat[0] + flat[1]
     return score
 
 
