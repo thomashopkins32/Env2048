@@ -48,18 +48,35 @@ def calc_score(score):
     sum = 0
     while score != 2 and score != 0:
         sum += score
-        score = score/2
+        score = int(score/2)
     return sum
 
 def score(matrix):
     score = 0
     flat = [x for y in matrix for x in y]
     flat = sorted(flat, reverse=True)
+    boost_count = 0
     for i in range(4):
         for j in range(4):
-            if matrix[i][j] == flat[0] and is_edge(i, j):
-                score += 5
+            if i == 0 or i == 3:
+                edge_row = True
+            if j == 0 or j == 3:
+                edge_col = True
+            if boost_count < 4:
+                if matrix[i][j] == flat[0] and is_edge(i, j):
+                    boost_count += 1
+                    score += 5
+                if matrix[i][j] == flat[1] and is_edge(i, j):
+                    boost_count += 1
+                    score += 5
+                if matrix[i][j] == flat[2] and is_edge(i, j):
+                    boost_count += 1
+                    score += 5
+                if matrix[i][j] == flat[3] and is_edge(i, j):
+                    boost_count += 1
+                    score += 5
             score += calc_score(matrix[i][j])
+    score += int(flat[0] / 2)
     return score
 
 
