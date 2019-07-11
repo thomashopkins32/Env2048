@@ -3,7 +3,9 @@ from player import *
 from constants import *
 import logic
 
+# Class for visualizing game results
 class Window(tk.Frame):
+    # constructor
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
@@ -14,10 +16,10 @@ class Window(tk.Frame):
         self.update_labels()
         self.simulate()
 
+    # sets up window with content
     def init_window(self):
         self.master.geometry(GEOMETRY)
         self.master.title('2048')
-        #self.master.bind('<Key>', self.key_pressed)
         self.header = tk.Frame(self.master, bg='#92877d')
         self.create_header_widgets(self.header)
 
@@ -29,6 +31,7 @@ class Window(tk.Frame):
         row_weights = [1, 99]
         self.create_grid(self.master, layout=layout, r_weights=row_weights, c_weights=col_weights)
 
+    # generic function for creating grids
     def create_grid(self, container, layout=[], r_weights=[], c_weights=[]):
         if layout == [] or r_weights == [] or c_weights == []:
             print('Error creating grid with empty layout...')
@@ -41,6 +44,7 @@ class Window(tk.Frame):
             for j in range(len(layout[i])):
                 layout[i][j].grid(row=i, column=j, sticky='nsew')
 
+    # simulates the genetic algorithm
     def simulate(self):
         win = False
         population = []
@@ -59,10 +63,11 @@ class Window(tk.Frame):
             print(output_string)
             if population[0].outcome == 'win':
                 win = True
+                print('Game won')
                 break
             if generation % GEN_OFFSET == 0:
                 extend = True
-                print('Extending moveset by 50...')
+                print('Extending moveset by ' + str(EXTEND_SIZE) + '...')
             new_generation = []
             sample = int((ELITE*POPULATION_SIZE)/100)
             for i in population[:sample+1]:
@@ -81,12 +86,14 @@ class Window(tk.Frame):
             generation += 1
             self.update_gen(generation)
 
+    # creates header for displaying score and generation
     def create_header_widgets(self, header):
         self.score = tk.Label(header, text='Score: ', anchor='w', font=('Helvetica', 18), bg='#92877d')
         self.gen = tk.Label(header, text='Generation: ', anchor='w', font=('Helvetica', 18), bg='#92877d')
         self.score.pack()
         self.gen.pack()
 
+    # creates grid for the main game
     def create_content_grid(self, content):
         self.labels = []
         for i in range(4):
@@ -98,6 +105,7 @@ class Window(tk.Frame):
         row_weights = [25, 25, 25 ,25]
         self.create_grid(content, layout=self.labels, r_weights=row_weights, c_weights=col_weights)
 
+    # updates window labels
     def update_labels(self):
         for i in range(4):
             for j in range(4):
@@ -110,10 +118,12 @@ class Window(tk.Frame):
         self.score.configure(text=score_text)
         self.update_idletasks()
 
+    # updates the generation label
     def update_gen(self, gen):
         gen_text = 'Generation: ' + str(gen)
         self.gen.configure(text=gen_text)
         self.update_idletasks()
 
+    # updates value of matrix member
     def update_matrix(self, new_matrix):
         self.matrix = new_matrix
