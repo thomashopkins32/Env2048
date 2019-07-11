@@ -1,13 +1,7 @@
 import tkinter as tk
 from player import *
-from numpy import random
+from constants import *
 import logic
-
-GEOMETRY = '800x1000'
-COLORS = {2: "#eee4da", 4: "#ede0c8", 8: "#f2b179",
-                         16: "#f59563", 32: "#f67c5f", 64: "#f65e3b",
-                         128: "#edcf72", 256: "#edcc61", 512: "#edc850",
-                         1024: "#edc53f", 2048: "#edc22e"}
 
 class Window(tk.Frame):
     def __init__(self, master=None):
@@ -17,8 +11,6 @@ class Window(tk.Frame):
 
         self.score_raw = 0
         self.matrix = logic.new_game()
-        self.matrix = logic.add_new(self.matrix)
-        self.matrix = logic.add_new(self.matrix)
         self.update_labels()
         self.simulate()
 
@@ -51,13 +43,14 @@ class Window(tk.Frame):
 
     def simulate(self):
         win = False
-        population_size = 800
         population = []
         generation = 1
         self.update_gen(generation)
-        for i in range(population_size):
-            population.append(Player(''))
+        for i in range(POPULATION_SIZE):
+            chrom = Player.create_genome()
+            population.append(Player(chrom))
         while not win:
+            extend = False
             population = sorted(population, key=lambda x: x.fitness, reverse=True)
             self.update_matrix(population[0].game)
             self.score_raw = population[0].fitness
@@ -67,16 +60,22 @@ class Window(tk.Frame):
             if population[0].outcome == 'win':
                 win = True
                 break
+            if generation % GEN_OFFSET == 0:
+                extend = True
+                print('Extending moveset by 50...')
             new_generation = []
-            sample = int((5*population_size)/100)
-            # problem performing elitism
+            sample = int((ELITE*POPULATION_SIZE)/100)
             for i in population[:sample+1]:
+                if extend:
+                    i.extend()
                 new_generation.append(i)
-            sample = int((95*population_size)/100)
+            sample = int(((100-ELITE)*POPULATION_SIZE)/100)
             for i in range(sample):
-                parent1 = random.choice(population[:400])
-                parent2 = random.choice(population[:400])
+                parent1 = R_GLOBAL.choice(population[:int(POPULATION_SIZE/2)])
+                parent2 = R_GLOBAL.choice(population[:int(POPULATION_SIZE/2)])
                 child = parent1.mate(parent2)
+                if extend:
+                    child.extend()
                 new_generation.append(child)
             population = new_generation
             generation += 1

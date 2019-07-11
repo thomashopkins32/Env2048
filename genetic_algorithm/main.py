@@ -4,7 +4,6 @@ from window import *
 def main():
     print('Populating...')
     root = tk.Tk()
-    random.seed(22)
     window = Window(master=root)
     window.mainloop()
 

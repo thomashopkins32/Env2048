@@ -1,21 +1,35 @@
 from numpy import random
 import logic
+from constants import *
 
 class Player(object):
     def __init__(self, chromosome):
-        self.genes = 'LURD'
+        self.genes = GENE_POOL
         self.chromosome = chromosome
         self.fitness = 0
-        self.game = logic.new_game()
-        self.game = logic.add_new(self.game)
-        self.game = logic.add_new(self.game)
-        self.outcome = self.simulate()
+        self.game = []
+        self.outcome = ''
+        self.random = random.RandomState(41)
+        self.play()
+
+    @classmethod
+    def create_genome(self):
+        chromosome = ''
+        for i in range(EXTEND_SIZE):
+            chromosome += self.mutate()
+        return chromosome
 
     @classmethod
     def mutate(self):
-        genes = [i for i in 'LURD']
-        gene = random.choice(genes)
+        genes = [i for i in GENE_POOL]
+        gene = R_GLOBAL.choice(genes)
         return str(gene)
+
+    def play(self):
+        self.game = logic.new_game()
+        self.game = logic.add_new(self.game, self.random)
+        self.game = logic.add_new(self.game, self.random)
+        self.outcome = self.simulate()
 
     def perform_action(self, allele):
         if allele == 'R':
@@ -29,12 +43,12 @@ class Player(object):
 
     def compare_game(self, tmp):
         if tmp != self.game:
-            self.game = logic.add_new(self.game)
+            self.game = logic.add_new(self.game, self.random)
             self.fitness = self.calculate_fitness()
 
     def replace(self, exclude):
-        genes = 'LURD'.replace(exclude, '')
-        new_allele = random.choice(genes)
+        genes = GENE_POOL.replace(exclude, '')
+        new_allele = R_GLOBAL.choice(genes)
         return new_allele
 
     def simulate(self):
@@ -51,25 +65,15 @@ class Player(object):
             game_state = logic.game_state(self.game)
             if game_state != 'continue':
                 break
-        while game_state == 'continue':
-            tmp = [x[:] for x in self.game]
-            count += 1
-            if is_repeat:
-                self.chromosome += self.replace(self.chromosome[-1])
-            else:
-                self.chromosome += self.mutate()
-            self.perform_action(self.chromosome[-1])
-            is_repeat = self.compare_game(tmp)
-            game_state = logic.game_state(self.game)
         return game_state
 
     def mate(self, other):
         child = ''
         for p1, p2 in zip(self.chromosome, other.chromosome):
-            prob = random.random()
-            if prob < .35:
+            prob = R_GLOBAL.random_sample()
+            if prob < ((1.0 - MUTATION_RATE) / 2.0):
                 child += p1
-            elif prob < .7:
+            elif prob < (1.0 - MUTATION_RATE):
                 child += p2
             else:
                 child += self.mutate()
@@ -80,6 +84,10 @@ class Player(object):
         print('Game: ')
         print(self.game)
         print('Chromosome: ' + self.chromosome)
+
+    def extend(self):
+        for i in range(EXTEND_SIZE):
+            self.chromosome += self.mutate()
 
 
     def calculate_fitness(self):
