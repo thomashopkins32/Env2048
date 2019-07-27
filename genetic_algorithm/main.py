@@ -1,6 +1,7 @@
 import tkinter as tk
 from window import *
 
+# driver function
 def main():
     print('Populating...')
     root = tk.Tk()
