@@ -1,27 +1,39 @@
-from constants import *
+'''
+Contributor(s): Thomas Hopkins
 
-# creates a new game of 2048
+Contains the logic required to create the game 2048.
+'''
+
 def new_game():
+    '''
+    Creates a new game of 2048.
+    '''
     matrix = []
-    for i in range(4):
+    for _ in range(4):
         matrix.append([0]*4)
     return matrix
 
-# adds a new tile in a random free location on game board
-# 90% chance for 2, 10% chance for 4
-def add_new(matrix, r):
-    i = r.randint(0, 4)
-    j = r.randint(0, 4)
+
+def add_new(matrix, rand):
+    '''
+    Adds a new tile in a random free location on game board
+    90% chance for 2, 10% chance for 4
+    '''
+    i = rand.randint(0, 4)
+    j = rand.randint(0, 4)
     while matrix[i][j] != 0:
-        i = r.randint(0, 4)
-        j = r.randint(0, 4)
+        i = rand.randint(0, 4)
+        j = rand.randint(0, 4)
     distribution = [2] * 9 + [4]
-    value = r.choice(distribution)
+    value = rand.choice(distribution)
     matrix[i][j] = value
     return matrix
 
-# determines whether a player has won, lost, or can continue
 def game_state(matrix):
+    '''
+    Determines whether a player has won, lost, or can continue.
+    Called after each move made.
+    '''
     fill_count = 0
     check_failure = False
     for i in range(4):
@@ -43,33 +55,41 @@ def game_state(matrix):
             return 'lose'
     return 'continue'
 
-# checks the column for top 4 numbered tiles and increases fitness
 def check_col(j, matrix, highest):
-    score = 0
+    '''
+    Checks the column for top 4 numbered tiles and increases fitness
+    '''
+    add_score = 0
     for k in range(4):
         if matrix[k][j] in highest[:4] and matrix[k][j] != highest[0]:
-            score += 10
-    return score
+            add_score += 10
+    return add_score
 
-# checks the row for top 4 numbered tiles and increases fitness
 def check_row(i, matrix, highest):
-    score = 0
+    '''
+    Checks the row for top 4 numbered tiles and increases fitness
+    '''
+    add_score = 0
     for k in range(4):
         if matrix[i][k] in highest[:4] and matrix[i][k] != highest[0]:
-            score += 25
-    return score
+            add_score += 25
+    return add_score
 
-# calculates score based on the merging of tiles
-def calc_score(score):
-    sum = 0
-    while score != 2 and score != 0:
-        sum += score
-        score = int(score/2)
-    return sum
+def calc_score(tile):
+    '''
+    Calculates score based on the merging of tiles
+    '''
+    total = 0
+    while tile != 2 and tile != 0:
+        total += tile
+        tile = int(tile/2)
+    return total
 
-# calculates a score representing the "best" game board (fitness function)
 def score(matrix):
-    score = 0
+    '''
+    Calculates a score representing the "best" game board (fitness function)
+    '''
+    total_score = 0
     boost = True
     highest = [x for y in matrix for x in y]
     highest = sorted(highest, reverse=True)
@@ -77,18 +97,20 @@ def score(matrix):
     for i in range(4):
         for j in range(4):
             if (i == 0 or i == 3) and matrix[i][j] == highest[0] and boost:
-                score += 50
-                score += check_row(i, matrix, highest)
+                total_score += 50
+                total_score += check_row(i, matrix, highest)
                 boost = False
             if (j == 0 or j == 3) and matrix[i][j] == highest[0] and boost:
-                score += 50
-                score += check_col(j, matrix, highest)
+                total_score += 50
+                total_score += check_col(j, matrix, highest)
                 boost = False
-            score += calc_score(matrix[i][j])
-    return score
+            total_score += calc_score(matrix[i][j])
+    return total_score
 
-# moves all tiles to the right and combines same numbered tiles
 def right(board):
+    '''
+    Moves all tiles to the right and combines same numbered tiles
+    '''
     for i in range(0, 4, 1):
         for j in range(3, 0, -1):
             for k in range(j-1, -1, -1):
@@ -104,8 +126,10 @@ def right(board):
                         break
     return board
 
-# moves all tiles to the left and combines same numbered tiles
 def left(board):
+    '''
+    Moves all tiles to the left and combines same numbered tiles
+    '''
     for i in range(0, 4, 1):
         for j in range(0, 3, 1):
             for k in range(j+1, 4, 1):
@@ -121,8 +145,10 @@ def left(board):
                         break
     return board
 
-# moves all tiles up and combines same numbered tiles
 def up(board):
+    '''
+    Moves all tiles up and combines same numbered tiles
+    '''
     for j in range(0, 4, 1):
         for i in range(0, 3, 1):
             for k in range(i+1, 4, 1):
@@ -138,8 +164,10 @@ def up(board):
                         break
     return board
 
-# moves all tiles down and combines same numbered tiles
 def down(board):
+    '''
+    Moves all tiles down and combines same numbered tiles
+    '''
     for j in range(0, 4, 1):
         for i in range(3, 0, -1):
             for k in range(i-1, -1, -1):

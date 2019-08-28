@@ -1,12 +1,19 @@
-import tkinter as tk
-from window import *
+'''
+Contributor(s): Thomas Hopkins
 
-# driver function
+Driver module for 2048AI program
+'''
+import tkinter as tk
+from window import Application
+
 def main():
-    print('Populating...')
-    root = tk.Tk()
-    window = Window(master=root)
-    window.mainloop()
+	'''
+	Builds application and runs main loop
+	'''
+	print('Populating...')
+	root = tk.Tk()
+	app = Application(master=root)
+	app.mainloop()
 
 if __name__ == '__main__':
     main()

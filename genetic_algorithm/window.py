@@ -1,12 +1,22 @@
+'''
+Contributor(s): Thomas Hopkins
+
+Object module for Application class
+'''
+
 import tkinter as tk
 from player import *
 from constants import *
 import logic
 
-# Class for visualizing game results
-class Window(tk.Frame):
-    # constructor
+class Application(tk.Frame):
+    '''
+    Class for visualizing game results
+    '''
     def __init__(self, master=None):
+        '''
+        Builds window and launches simulation
+        '''
         super().__init__(master)
         self.master = master
         self.init_window()
@@ -16,8 +26,10 @@ class Window(tk.Frame):
         self.update_labels()
         self.simulate()
 
-    # sets up window with content
     def init_window(self):
+        '''
+        Fills the window wiht content
+        '''
         self.master.geometry(GEOMETRY)
         self.master.title('2048')
         self.header = tk.Frame(self.master, bg='#92877d')
@@ -31,8 +43,10 @@ class Window(tk.Frame):
         row_weights = [1, 99]
         self.create_grid(self.master, layout=layout, r_weights=row_weights, c_weights=col_weights)
 
-    # generic function for creating grids
     def create_grid(self, container, layout=[], r_weights=[], c_weights=[]):
+        '''
+        Creates a tkinter grid layout with given parameters
+        '''
         if layout == [] or r_weights == [] or c_weights == []:
             print('Error creating grid with empty layout...')
             quit()
@@ -44,8 +58,10 @@ class Window(tk.Frame):
             for j in range(len(layout[i])):
                 layout[i][j].grid(row=i, column=j, sticky='nsew')
 
-    # simulates the genetic algorithm
     def simulate(self):
+        '''
+        AI main loop
+        '''
         win = False
         population = []
         generation = 1
@@ -56,7 +72,7 @@ class Window(tk.Frame):
         while not win:
             extend = False
             population = sorted(population, key=lambda x: x.fitness, reverse=True)
-            self.update_matrix(population[0].game)
+            self.matrix = population[0].game
             self.score_raw = population[0].fitness
             self.update_labels()
             output_string = 'Generation: %-4s Fitness: %-8s' % (generation, population[0].fitness)
@@ -86,15 +102,19 @@ class Window(tk.Frame):
             generation += 1
             self.update_gen(generation)
 
-    # creates header for displaying score and generation
     def create_header_widgets(self, header):
+        '''
+        Creates header for displaying score and generation
+        '''
         self.score = tk.Label(header, text='Score: ', anchor='w', font=('Helvetica', 18), bg='#92877d')
         self.gen = tk.Label(header, text='Generation: ', anchor='w', font=('Helvetica', 18), bg='#92877d')
         self.score.pack()
         self.gen.pack()
 
-    # creates grid for the main game
     def create_content_grid(self, content):
+        '''
+        Creates grid for the main game
+        '''
         self.labels = []
         for i in range(4):
             tmp = []
@@ -105,8 +125,10 @@ class Window(tk.Frame):
         row_weights = [25, 25, 25 ,25]
         self.create_grid(content, layout=self.labels, r_weights=row_weights, c_weights=col_weights)
 
-    # updates window labels
     def update_labels(self):
+        '''
+        Updates window labels
+        '''
         for i in range(4):
             for j in range(4):
                 new_value = self.matrix[i][j]
@@ -118,12 +140,10 @@ class Window(tk.Frame):
         self.score.configure(text=score_text)
         self.update_idletasks()
 
-    # updates the generation label
     def update_gen(self, gen):
+        '''
+        Updates generation widget
+        '''
         gen_text = 'Generation: ' + str(gen)
         self.gen.configure(text=gen_text)
         self.update_idletasks()
-
-    # updates value of matrix member
-    def update_matrix(self, new_matrix):
-        self.matrix = new_matrix

@@ -3,6 +3,9 @@
 #include <iomanip>
 #include <string>
 #include <cstdlib>
+#include <algorithm>
+#include <iterator>
+
 
 void printBoard(int** board) {
 	for(int i = 0; i < 4; ++i) {
@@ -21,6 +24,19 @@ void add_two(int** board) {
 		j = rand() % 4;
 	}
 	board[i][j] = 2;
+}
+
+int** new_game() {
+	int ** board = new int*[4];
+	for(int i = 0; i < 4; ++i) {
+		board[i] = new int[4];
+		for(int j = 0; j < 4; ++j) {
+			board[i][j] = 0;
+		}
+	}
+	add_two(board);
+	add_two(board);
+	return board;
 }
 
 void right(int** board) {
@@ -111,17 +127,32 @@ void down(int** board) {
 	}
 }
 
-int main(int argc, char * argv[]) {
-	srand(12);
-	int ** board = new int*[4];
+std::string game_state(int** board) {
+	zero_count = 0;
+	check_failure = false;
 	for(int i = 0; i < 4; ++i) {
-		board[i] = new int[4];
 		for(int j = 0; j < 4; ++j) {
-			board[i][j] = 0;
+			if(board[i][j] == 2048)
+				return "win";
+			if(board[i][j] == 0) 
+				++zero_count;
 		}
 	}
-	add_two(board);
-	add_two(board);
+	if(zero_count > 0) {
+		int tmp[4][4];
+		std::copy(std::begin(board), std::end(board), std::begin(tmp));
+		right(board);
+		left(board);
+		up(board);
+		down(board);
+
+	}
+	return "continue";
+}
+
+int main(int argc, char * argv[]) {
+	srand(12);
+	new_game();
 	printBoard(board);
 	while(true) {
 		std::string move;
