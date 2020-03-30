@@ -4,7 +4,7 @@ Contributor(s): Thomas Hopkins
 Driver module for 2048AI program
 '''
 import tkinter as tk
-from window import Application
+from game.window import Application
 
 def main():
 	'''

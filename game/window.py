@@ -5,32 +5,37 @@ Object module for Application class
 '''
 
 import tkinter as tk
-from player import *
-from constants import *
+import constants as c
 import logic
 
 class Application(tk.Frame):
     '''
     Class for visualizing game results
     '''
-    def __init__(self, master=None):
+    def __init__(self, master=None, option='manual'):
         '''
         Builds window and launches simulation
         '''
         super().__init__(master)
         self.master = master
         self.init_window()
-
         self.score_raw = 0
         self.matrix = logic.new_game()
+        self.matrix = logic.add_new(self.matrix)
+        self.matrix = logic.add_new(self.matrix)
         self.update_labels()
-        self.simulate()
+        if option == 'genetic':
+            self.simulate()
+        elif option == 'manual':
+            self.master.bind('<Key>', self.key_pressed)
+        elif option == 'expectimax':
+            pass
 
     def init_window(self):
         '''
         Fills the window wiht content
         '''
-        self.master.geometry(GEOMETRY)
+        self.master.geometry(c.GEOMETRY)
         self.master.title('2048')
         self.header = tk.Frame(self.master, bg='#92877d')
         self.create_header_widgets(self.header)
@@ -62,45 +67,7 @@ class Application(tk.Frame):
         '''
         AI main loop
         '''
-        win = False
-        population = []
-        generation = 1
-        self.update_gen(generation)
-        for i in range(POPULATION_SIZE):
-            chrom = Player.create_genome()
-            population.append(Player(chrom))
-        while not win:
-            extend = False
-            population = sorted(population, key=lambda x: x.fitness, reverse=True)
-            self.matrix = population[0].game
-            self.score_raw = population[0].fitness
-            self.update_labels()
-            output_string = 'Generation: %-4s Fitness: %-8s' % (generation, population[0].fitness)
-            print(output_string)
-            if population[0].outcome == 'win':
-                win = True
-                print('Game won')
-                break
-            if generation % GEN_OFFSET == 0:
-                extend = True
-                print('Extending moveset by ' + str(EXTEND_SIZE) + '...')
-            new_generation = []
-            sample = int((ELITE*POPULATION_SIZE)/100)
-            for i in population[:sample+1]:
-                if extend:
-                    i.extend()
-                new_generation.append(i)
-            sample = int(((100-ELITE)*POPULATION_SIZE)/100)
-            for i in range(sample):
-                parent1 = R_GLOBAL.choice(population[:int(POPULATION_SIZE/2)])
-                parent2 = R_GLOBAL.choice(population[:int(POPULATION_SIZE/2)])
-                child = parent1.mate(parent2)
-                if extend:
-                    child.extend()
-                new_generation.append(child)
-            population = new_generation
-            generation += 1
-            self.update_gen(generation)
+        pass
 
     def create_header_widgets(self, header):
         '''
@@ -135,7 +102,7 @@ class Application(tk.Frame):
                 if new_value == 0:
                     self.labels[i][j].configure(text='', bg='#9e948a')
                 else:
-                    self.labels[i][j].configure(text=str(new_value), bg=COLORS[new_value])
+                    self.labels[i][j].configure(text=str(new_value), bg=c.COLORS[new_value])
         score_text = 'Score: ' + str(self.score_raw)
         self.score.configure(text=score_text)
         self.update_idletasks()
@@ -147,3 +114,23 @@ class Application(tk.Frame):
         gen_text = 'Generation: ' + str(gen)
         self.gen.configure(text=gen_text)
         self.update_idletasks()
+
+    def key_pressed(self, event):
+        e = event.keysym
+        if e == 'Right':
+            self.matrix = logic.right(self.matrix)
+        elif e == 'Left':
+            self.matrix = logic.left(self.matrix)
+        elif e == 'Up':
+            self.matrix = logic.up(self.matrix)
+        elif e == 'Down':
+            self.matrix = logic.down(self.matrix)
+        self.matrix = logic.add_new(self.matrix)
+        self.update_labels()
+        game_state = logic.game_state(self.matrix)
+        if game_state == 'win':
+            print('You Win!')
+            self.master.destroy()
+        elif game_state == 'lose':
+            print('You Lose!')
+            self.master.destroy()

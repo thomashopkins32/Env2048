@@ -3,6 +3,7 @@ Contributor(s): Thomas Hopkins
 
 Contains the logic required to create the game 2048.
 '''
+from numpy import random
 
 def new_game():
     '''
@@ -14,18 +15,18 @@ def new_game():
     return matrix
 
 
-def add_new(matrix, rand):
+def add_new(matrix):
     '''
     Adds a new tile in a random free location on game board
     90% chance for 2, 10% chance for 4
     '''
-    i = rand.randint(0, 4)
-    j = rand.randint(0, 4)
+    i = random.randint(0, 4)
+    j = random.randint(0, 4)
     while matrix[i][j] != 0:
-        i = rand.randint(0, 4)
-        j = rand.randint(0, 4)
+        i = random.randint(0, 4)
+        j = random.randint(0, 4)
     distribution = [2] * 9 + [4]
-    value = rand.choice(distribution)
+    value = random.choice(distribution)
     matrix[i][j] = value
     return matrix
 
