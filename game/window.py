@@ -6,6 +6,7 @@ Object module for Application class
 
 import tkinter as tk
 import tkinter.messagebox as messagebox
+import time
 
 import game.constants as c
 from game.game import GameState
@@ -22,12 +23,12 @@ class Application(tk.Frame):
         self.master = master
         self.init_window()
         self.score_raw = 0
-        self.game_state = GameState()
-        self.update_labels(self.game_state.get_board())
         if option == 'genetic':
-            pass
+            self.simulate_game('UDLRUDLRUDLRUUUUUUUUUU')
         elif option == 'manual':
             self.master.bind('<Key>', self.key_pressed)
+            self.game_state = GameState()
+            self.update_labels(self.game_state.get_board())
         elif option == 'expectimax':
             pass
 
@@ -106,8 +107,23 @@ class Application(tk.Frame):
         self.score.configure(text=score_text)
         self.update_idletasks()
 
+    def simulate_game(self, actions, game_state=None):
+        '''
+        Simulates the display of a string of actions
+        '''
+        if game_state == None:
+            game_state = GameState()
+        for action in actions:
+            game_state = game_state.perform_action(action)
+            self.update_labels(game_state.get_board())
+            if game_state.lost:
+                break
+            time.sleep(0.5)
 
     def key_pressed(self, event):
+        '''
+        Updates the display based on the key pressed by the user
+        '''
         e = event.keysym
         self.game_state = self.game_state.perform_action(e)
         self.update_labels(self.game_state.get_board())

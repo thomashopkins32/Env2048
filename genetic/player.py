@@ -5,12 +5,13 @@ Object module for Player class
 '''
 
 from numpy import random
-import logic
+
+from game.game import GameState
 from constants import *
 
-class Player(object):
+class GeneticPlayer():
     '''
-    Class for AI player
+    Class for a single Player in the genetic algorithm
     '''
     def __init__(self, chromosome):
         '''
@@ -19,9 +20,8 @@ class Player(object):
         self.genes = GENE_POOL
         self.chromosome = chromosome
         self.fitness = 0
-        self.game = []
+        self.game = GameState()
         self.outcome = ''
-        self.random = random.RandomState(41)
         self.play()
 
     @classmethod

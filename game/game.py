@@ -87,13 +87,13 @@ class GameState():
         if self.lost:
             return self
         tmp = self.get_board()
-        if action == 'Right':
+        if action == 'Right' or action == 'R':
             self.right()
-        elif action == 'Left':
+        elif action == 'Left' or action == 'L':
             self.left()
-        elif action == 'Down':
+        elif action == 'Down' or action == 'D':
             self.down()
-        elif action == 'Up':
+        elif action == 'Up' or action == 'U':
             self.up()
         else:
             print('action: ' + action + ', not a valid action')
