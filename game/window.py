@@ -24,7 +24,7 @@ class Application(tk.Frame):
         self.init_window()
         self.score_raw = 0
         if option == 'genetic':
-            self.simulate_game('UDLRUDLRUDLRUUUUUUUUUU')
+            pass
         elif option == 'manual':
             self.master.bind('<Key>', self.key_pressed)
             self.game_state = GameState()
@@ -113,9 +113,10 @@ class Application(tk.Frame):
         '''
         if game_state == None:
             game_state = GameState()
+        self.update_labels(game_state.matrix)
         for action in actions:
             game_state = game_state.perform_action(action)
-            self.update_labels(game_state.get_board())
+            self.update_labels(game_state.matrix)
             if game_state.lost:
                 break
             time.sleep(0.5)

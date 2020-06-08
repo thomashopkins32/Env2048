@@ -16,6 +16,7 @@ class GameState():
             self.add_new()
         else:
             self.matrix = state
+        self.initial_state = self.get_board()
         self.lost = lost
 
     def __iter__(self):
