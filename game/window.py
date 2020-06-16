@@ -107,12 +107,11 @@ class Application(tk.Frame):
         self.score.configure(text=score_text)
         self.update_idletasks()
 
-    def simulate_game(self, actions, game_state=None):
+    def simulate_game(self, actions, starting_board=[]):
         '''
         Simulates the display of a string of actions
         '''
-        if game_state == None:
-            game_state = GameState()
+        game_state = GameState(state=starting_board)
         self.update_labels(game_state.matrix)
         for action in actions:
             game_state = game_state.perform_action(action)
@@ -120,6 +119,8 @@ class Application(tk.Frame):
             if game_state.lost:
                 break
             time.sleep(0.5)
+        time.sleep(10)
+        self.master.destroy()
 
     def key_pressed(self, event):
         '''
