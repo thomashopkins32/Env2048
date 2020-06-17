@@ -14,6 +14,7 @@ if __name__ == '__main__':
 	if len(sys.argv) == 2:
 		if sys.argv[1] == 'genetic':
 			agent = GeneticAgent()
+			agent.genetic_alg()
 		elif sys.argv[1] == 'manual':
 			manual_play()
 		else:

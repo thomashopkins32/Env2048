@@ -18,9 +18,10 @@ class GeneticPlayer():
         Builds Player with input chromosome
         '''
         self.chromosome = chromosome
-        self.fitness = 0
-        self.game = GameState().perform_multiple_actions(chromosome)
-        self.calculate_fitness()
+        self.game = GameState()
+        self.initial_state = self.game.get_board()
+        self.game.perform_multiple_actions(chromosome)
+        self.fitness = self.calculate_fitness()
 
     @classmethod
     def create_genome(cls):

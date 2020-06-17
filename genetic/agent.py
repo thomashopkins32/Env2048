@@ -1,5 +1,4 @@
 from numpy import random
-import keyboard
 import tkinter as tk
 
 from game.game import GameState
@@ -26,14 +25,13 @@ class GeneticAgent():
 		the Tab key.
 		To resume algorithm, press the Enter key.
 		'''
+		generation = 0
 		while True:
-			if keyboard.is_pressed('Tab'):
+			print('Mating...')
+			if generation % 10 == 0:
 				# move current best of ranked players to game window
 				self.visualize_moves(self.ranked_players[0])
-				keyboard.wait('Enter')
-			else:
-				# proceed with player mutation and mating
-				print('mating')
+			generation += 1
 				
 
 
@@ -43,7 +41,7 @@ class GeneticAgent():
 		'''
 		self.root = tk.Tk()
 		self.app = Application(master=self.root, option='genetic')
-		self.app.after(10, self.app.simulate_game(player.chromosome, starting_board=player.game.initial_state))
+		self.app.after(10, self.app.simulate_game(player.chromosome, starting_board=player.initial_state))
 		self.app.mainloop()
 
 		

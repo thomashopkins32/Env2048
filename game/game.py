@@ -6,7 +6,7 @@ Contains the logic required to create the game 2048.
 from numpy import random
 
 class GameState():
-    def __init__(self, state=[], lost=False, initial=[]):
+    def __init__(self, state=[], lost=False):
         '''
         Create new empty 4x4 board and add two tiles to game
         '''
@@ -15,10 +15,7 @@ class GameState():
             self.add_new()
             self.add_new()
         else:
-            self.matrix = state
-        self.initial_state = initial
-        if not lost and initial == None:
-            self.initial_state = self.get_board()
+            self.matrix = [x[:] for x in state]
         self.lost = lost
         
 
@@ -78,10 +75,9 @@ class GameState():
         Simulates results of multiple actions 
         and returns new GameState
         '''
-        game_state = self
         for action in actions:
-            game_state = game_state.perform_action(action)
-        return game_state
+            self.perform_action(action)
+        return self.get_board()
 
     def perform_action(self, action):
         '''
@@ -89,7 +85,7 @@ class GameState():
         and returns a new GameState
         '''
         if self.lost:
-            return self
+            return
         tmp = self.get_board()
         if action == 'Right' or action == 'R':
             self.right()
@@ -106,8 +102,7 @@ class GameState():
             self.add_new()
         if self.game_lost():
             print('You Lost!')
-            return GameState(state=self.matrix, lost=True, initial=self.initial_state)
-        return GameState(state=self.matrix, initial=self.initial_state)
+            self.lost = True
 
 
     def right(self):

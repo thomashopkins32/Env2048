@@ -114,12 +114,13 @@ class Application(tk.Frame):
         game_state = GameState(state=starting_board)
         self.update_labels(game_state.matrix)
         for action in actions:
-            game_state = game_state.perform_action(action)
+            game_state.perform_action(action)
             self.update_labels(game_state.matrix)
             if game_state.lost:
+                print('simulated game lost :(')
                 break
-            time.sleep(0.5)
-        time.sleep(10)
+            time.sleep(0.1)
+        time.sleep(5)
         self.master.destroy()
 
     def key_pressed(self, event):
@@ -127,12 +128,12 @@ class Application(tk.Frame):
         Updates the display based on the key pressed by the user
         '''
         e = event.keysym
-        self.game_state = self.game_state.perform_action(e)
-        self.update_labels(self.game_state.get_board())
+        self.game_state.perform_action(e)
+        self.update_labels(self.game_state.matrix)
         if self.game_state.lost:
             msg_box = messagebox.askyesno(title='You Lost!', message='Do you want to play a new game?')
             if msg_box:
                 self.game_state = GameState()
-                self.update_labels(self.game_state.get_board())
+                self.update_labels(self.game_state.matrix)
             else:
                 self.master.destroy()
