@@ -101,7 +101,6 @@ class GameState():
         if tmp != self.matrix:
             self.add_new()
         if self.game_lost():
-            print('You Lost!')
             self.lost = True
 
 

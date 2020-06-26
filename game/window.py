@@ -118,7 +118,8 @@ class Application(tk.Frame):
             self.update_labels(game_state.matrix)
             if game_state.lost:
                 print('simulated game lost :(')
-                break
+                self.master.destroy()
+                quit()
             time.sleep(0.1)
         time.sleep(5)
         self.master.destroy()

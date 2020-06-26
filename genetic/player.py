@@ -21,7 +21,7 @@ class GeneticPlayer():
         self.game = GameState()
         self.initial_state = self.game.get_board()
         self.game.perform_multiple_actions(chromosome)
-        self.fitness = self.calculate_fitness()
+        self.fitness = 0
 
     @classmethod
     def create_genome(cls):
@@ -86,9 +86,34 @@ class GeneticPlayer():
         '''
         for _ in range(EXTEND_SIZE):
             self.chromosome += self.mutate()
+        self.fitness = self.calculate_fitness()
 
     def calculate_fitness(self):
         '''
         Calculates the fitness of the Player
         '''
-        return 0
+        if self.game.lost:
+            self.fitness = 0
+            return
+        board = self.game.matrix
+        position_heuristic = 0
+        for i in range(4):
+            for j in range(4):
+                position_heuristic += board[i][j] * POSITION_TABLE[i][j]
+        difference_penalty = 0
+        for i in range(4):
+            for j in range(4):
+                neighbors = [(i+1, j), (i-1, j), (i, j+1), (i, j-1)]
+                for (ni, nj) in neighbors:
+                    if ni < 0 or ni >= 4 or nj < 0 or nj >= 4:
+                        continue
+                    difference_penalty += abs(board[i][j] - board[ni][nj])
+        difference_penalty = -difference_penalty
+        increasing_along_edge = 0
+        bottom_edge = sorted(board[3])
+        if bottom_edge == board[3]:
+            increasing_along_edge += 100
+        right_edge = sorted(board[:][3])
+        if right_edge == board[:][3]:
+            increasing_along_edge += 100
+        self.fitness = 5*position_heuristic + 1*difference_penalty + 5*increasing_along_edge
