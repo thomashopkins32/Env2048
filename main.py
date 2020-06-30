@@ -11,14 +11,20 @@ def manual_play():
 	app.mainloop()
 
 if __name__ == '__main__':
+	# TODO: argparse!!!
 	if len(sys.argv) == 2:
 		if sys.argv[1] == 'genetic':
 			agent = GeneticAgent()
 			agent.genetic_alg()
 		elif sys.argv[1] == 'manual':
 			manual_play()
+		elif sys.argv[1] == 'expectimax':
+			agent = ExpectimaxAgent()
+			agent.expectimax_alg()
 		else:
 			print("unknown argument " + sys.argv[1] + ' provided...')
 			quit()
 	elif len(sys.argv) == 1:
 		manual_play()
+	else:
+		print('Too many arguments provided')

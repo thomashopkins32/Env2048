@@ -5,6 +5,7 @@ Contains the logic required to create the game 2048.
 '''
 from numpy import random
 
+
 class GameState():
     def __init__(self, state=[], lost=False):
         '''
@@ -79,13 +80,16 @@ class GameState():
             self.perform_action(action)
         return self.get_board()
 
-    def perform_action(self, action):
+    def perform_action(self, action, new_game_state=False):
         '''
         Simulates the result of taking a single action 
         and returns a new GameState
         '''
         if self.lost:
-            return
+            if new_game_state:
+                return self
+            else:
+                return
         tmp = self.get_board()
         if action == 'Right' or action == 'R':
             self.right()
@@ -102,6 +106,11 @@ class GameState():
             self.add_new()
         if self.game_lost():
             self.lost = True
+        if new_game_state:
+            new_game = GameState(state=self.get_board(), lost=self.lost)
+            # reset this game state to before action was taken
+            self.matrix = tmp
+            return new_game
 
 
     def right(self):

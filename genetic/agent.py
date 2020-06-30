@@ -1,7 +1,6 @@
 from numpy import random
 import tkinter as tk
 
-from game.game import GameState
 from game.window import Application
 from genetic.player import GeneticPlayer
 import genetic.constants as const
