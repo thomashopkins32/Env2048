@@ -2,28 +2,34 @@ from game.game import GameState
 import expectimax.constants as const
 
 class ExpectimaxAgent():
-	def __init__(self):
-		self.game = GameState()
-		self.initial_state = self.game.get_board()
-		self.score = 0
-		self.turn_counter = 0
-		self.all_moves = ''
 
-	def expectimax_alg(self, node, depth):
-		if depth == const.MAX_DEPTH or node.lost:
-			return self.calculate_score(node)
-		make_move = self.turn_counter % 2 == 0
-		if make_move:
-			v = float('-inf')
-			for move in const.MOVESET:
-				new_game = self.game.perform_action(move, new_game_state=True)
-				v = max(v, self.expectimax_alg(new_game, depth-1))
+
+	def getAction(self, game_state):
+		return self.maxValue(game_state, 0)
+
+
+	def maxValue(self, game_state, depth):
+		if game_state.lost:
+			return game_state.get_score()
+		actions = const.MOVESET
+		best_score = float('inf')
+		best_action = None
+		for action in actions:
+			score = self.expectedValue(game_state.generate_successor(action), depth)
+			if score > best_score:
+				score = best_score
+				best_action = action
+		if depth == const.MAX_DEPTH:
+			return best_action
 		else:
-			# TODO: chance node
-			# cant use perform action above since it takes both turns at once
-			# add functionality to GameState for methods that return new instances
-			# of GameState
+			return best_score
 
 
-
-
+	def expectedValue(self, game_state, depth):
+		if game_state.lost or depth == const.MAX_DEPTH:
+			return game_state.get_score()
+		possible_states = game_state.possible_random_states() #TODO: return list of (state, prob of occurrence)
+		score = 0
+		for state, prob in possible_states:
+			score += (self.maxValue(state, depth+1)*prob)
+		return score

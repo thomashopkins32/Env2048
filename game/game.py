@@ -17,7 +17,7 @@ class GameState():
             self.add_new()
         else:
             self.matrix = [x[:] for x in state]
-        self.lost = lost
+        self.lost = self.game_lost()
         
 
     def __iter__(self):
@@ -80,16 +80,13 @@ class GameState():
             self.perform_action(action)
         return self.get_board()
 
-    def perform_action(self, action, new_game_state=False):
+    def perform_action(self, action):
         '''
         Simulates the result of taking a single action 
-        and returns a new GameState
+        and modifies state in place
         '''
         if self.lost:
-            if new_game_state:
-                return self
-            else:
-                return
+            return
         tmp = self.get_board()
         if action == 'Right' or action == 'R':
             self.right()
@@ -106,11 +103,22 @@ class GameState():
             self.add_new()
         if self.game_lost():
             self.lost = True
-        if new_game_state:
-            new_game = GameState(state=self.get_board(), lost=self.lost)
-            # reset this game state to before action was taken
-            self.matrix = tmp
-            return new_game
+
+    def generate_successor(self, action):
+        '''
+        Simulates the result of taking a single action
+        and returns a new GameState
+        '''
+        if self.lost:
+            return self
+        tmp = self.get_board()
+        self.perform_action(action)
+        # reset lost
+        if self.lost:
+            self.lost = False
+        successor = self.get_board()
+        self.matrix = tmp
+        return GameState(state=successor)
 
 
     def right(self):
