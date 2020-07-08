@@ -10,6 +10,7 @@ import time
 
 import game.constants as c
 from game.game import GameState
+from expectimax.agent import ExpectimaxAgent
 
 class Application(tk.Frame):
     '''
@@ -28,9 +29,12 @@ class Application(tk.Frame):
         elif option == 'manual':
             self.master.bind('<Key>', self.key_pressed)
             self.game_state = GameState()
-            self.update_labels(self.game_state.get_board())
+            self.update_labels(self.game_state.matrix)
         elif option == 'expectimax':
-            pass
+            self.game_state = GameState()
+            self.game_state.perform_multiple_actions('RDURDRDRDURDRDRDRUDRD')
+            self.update_labels(self.game_state.matrix)
+            self.agent = ExpectimaxAgent()
 
     def init_window(self):
         '''
@@ -107,7 +111,7 @@ class Application(tk.Frame):
         self.score.configure(text=score_text)
         self.update_idletasks()
 
-    def simulate_game(self, actions, starting_board=[]):
+    def simulate_game_from_board(self, actions, starting_board=[]):
         '''
         Simulates the display of a string of actions
         '''
@@ -138,3 +142,11 @@ class Application(tk.Frame):
                 self.update_labels(self.game_state.matrix)
             else:
                 self.master.destroy()
+
+    def simulate_game_from_scratch(self):
+        while not self.game_state.lost:
+            action = self.agent.getAction(self.game_state)
+            self.game_state.perform_action(action)
+            self.update_labels(self.game_state.matrix)
+        time.sleep(5)
+        self.destroy()

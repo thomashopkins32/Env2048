@@ -10,8 +10,10 @@ def manual_play():
 	app = Application(master=root, option='manual')
 	app.mainloop()
 
+
 if __name__ == '__main__':
 	# TODO: argparse!!!
+	sys.setrecursionlimit(5000)
 	if len(sys.argv) == 2:
 		if sys.argv[1] == 'genetic':
 			agent = GeneticAgent()
@@ -19,8 +21,9 @@ if __name__ == '__main__':
 		elif sys.argv[1] == 'manual':
 			manual_play()
 		elif sys.argv[1] == 'expectimax':
-			agent = ExpectimaxAgent()
-			agent.expectimax_alg()
+			root = tk.Tk()
+			app = Application(master=root, option='expectimax')
+			app.simulate_game_from_scratch()
 		else:
 			print("unknown argument " + sys.argv[1] + ' provided...')
 			quit()
