@@ -34,8 +34,9 @@ def test_right():
                          [0, 0, 0, 0],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_r = game.merge(game.state, 'right')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'right')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 32)
 
     # test full board
     game = GameState(state=np.array([[8, 8, 8, 8],
@@ -46,8 +47,9 @@ def test_right():
                          [0, 0, 16, 16],
                          [0, 0, 16, 16],
                          [0, 0, 16, 16]])
-    game_r = game.merge(game.state, 'right')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'right')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 128)
 
     # test no change
     game = GameState(state=np.array([[0, 0, 8, 16],
@@ -58,8 +60,9 @@ def test_right():
                          [0, 0, 0, 0],
                          [32, 8, 4, 2],
                          [0, 0, 0, 4]])
-    game_r = game.merge(game.state, 'right')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'right')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 0)
 
     # test with distanced merge
     game = GameState(state=np.array([[8, 0, 0, 8],
@@ -70,8 +73,9 @@ def test_right():
                          [0, 0, 0, 16],
                          [0, 0, 8, 2],
                          [0, 0, 2, 8]])
-    game_r = game.merge(game.state, 'right')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'right')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 48)
 
     # test with blocker 
     game = GameState(state=np.array([[8, 4, 2, 8],
@@ -82,8 +86,9 @@ def test_right():
                          [0, 2, 4, 2],
                          [0, 2, 4, 2],
                          [0, 2, 4, 2]])
-    game_r = game.merge(game.state, 'right')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'right')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 0)
 
 
 def test_left():
@@ -96,8 +101,9 @@ def test_left():
                          [0, 0, 0, 0],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_r = game.merge(game.state, 'left')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'left')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 32)
 
     # test full board
     game = GameState(state=np.array([[8, 8, 8, 8],
@@ -108,8 +114,9 @@ def test_left():
                          [16, 16, 0, 0],
                          [16, 16, 0, 0],
                          [16, 16, 0, 0]])
-    game_r = game.merge(game.state, 'left')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'left')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 128)
 
     # test no change
     game = GameState(state=np.array([[8, 16, 0, 0],
@@ -120,8 +127,9 @@ def test_left():
                          [0, 0, 0, 0],
                          [32, 8, 4, 2],
                          [4, 0, 0, 0]])
-    game_r = game.merge(game.state, 'left')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'left')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 0)
 
     # test with distanced merge
     game = GameState(state=np.array([[8, 0, 0, 8],
@@ -132,8 +140,9 @@ def test_left():
                          [16, 0, 0, 0],
                          [8, 2, 0, 0],
                          [2, 8, 0, 0]])
-    game_r = game.merge(game.state, 'left')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'left')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 48)
 
     # test with blocker 
     game = GameState(state=np.array([[8, 4, 2, 8],
@@ -144,8 +153,9 @@ def test_left():
                          [2, 4, 2, 0],
                          [2, 4, 2, 0],
                          [2, 4, 2, 0]])
-    game_r = game.merge(game.state, 'left')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'left')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 0)
 
 
 def test_up():
@@ -158,8 +168,9 @@ def test_up():
                          [0, 0, 0, 0],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_r = game.merge(game.state, 'up')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'up')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 32)
 
     # test full board
     game = GameState(state=np.array([[8, 8, 8, 8],
@@ -170,8 +181,9 @@ def test_up():
                          [16, 16, 16, 16],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_r = game.merge(game.state, 'up')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'up')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 128)
 
     # test no change
     game = GameState(state=np.array([[32, 8, 8, 16],
@@ -182,8 +194,9 @@ def test_up():
                          [0, 0, 4, 2],
                          [0, 0, 0, 4],
                          [0, 0, 0, 0]])
-    game_r = game.merge(game.state, 'up')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'up')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 0)
 
     # test with distanced merge
     game = GameState(state=np.array([[8, 8, 4, 2],
@@ -194,8 +207,9 @@ def test_up():
                          [0, 0, 2, 8],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_r = game.merge(game.state, 'up')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'up')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 48)
 
     # test with blocker 
     game = GameState(state=np.array([[8, 4, 0, 4],
@@ -206,8 +220,9 @@ def test_up():
                          [4, 2, 2, 2],
                          [2, 4, 4, 4],
                          [8, 0, 0, 0]])
-    game_r = game.merge(game.state, 'up')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'up')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 0)
 
 
 def test_down(): 
@@ -220,8 +235,9 @@ def test_down():
                          [0, 0, 0, 0],
                          [0, 0, 0, 0],
                          [0, 0, 0, 32]])
-    game_r = game.merge(game.state, 'down')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'down')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 32)
 
     # test full board
     game = GameState(state=np.array([[8, 8, 8, 8],
@@ -232,8 +248,9 @@ def test_down():
                          [0, 0, 0, 0],
                          [16, 16, 16, 16],
                          [16, 16, 16, 16]])
-    game_r = game.merge(game.state, 'down')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'down')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 128)
 
     # test no change
     game = GameState(state=np.array([[0, 0, 0, 0],
@@ -244,8 +261,9 @@ def test_down():
                          [0, 0, 0, 16],
                          [0, 0, 4, 2],
                          [32, 8, 8, 4]])
-    game_r = game.merge(game.state, 'down')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'down')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 0)
 
     # test with distanced merge
     game = GameState(state=np.array([[8, 8, 4, 2],
@@ -256,8 +274,9 @@ def test_down():
                          [0, 0, 0, 0],
                          [0, 0, 8, 2],
                          [16, 16, 2, 8]])
-    game_r = game.merge(game.state, 'down')
-    assert(np.array_equal(game_r, expected))
+    game_t, score = game.merge(game.state, 'down')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 48)
 
     # test with blocker 
     game = GameState(state=np.array([[8, 4, 0, 4],
@@ -268,11 +287,7 @@ def test_down():
                          [4, 4, 4, 4],
                          [2, 2, 2, 2],
                          [8, 4, 4, 4]])
-    game_r = game.merge(game.state, 'down')
-    assert(np.array_equal(game_r, expected))
-
-
-
-def test_score():
-    pass
+    game_t, score = game.merge(game.state, 'down')
+    assert(np.array_equal(game_t, expected))
+    assert(score == 0)
 
