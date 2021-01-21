@@ -34,7 +34,7 @@ def test_right():
                          [0, 0, 0, 0],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_t, score = game.merge(game.state, 'right')
+    game_t, score = game._merge(game.state, 'right')
     assert(np.array_equal(game_t, expected))
     assert(score == 32)
 
@@ -47,7 +47,7 @@ def test_right():
                          [0, 0, 16, 16],
                          [0, 0, 16, 16],
                          [0, 0, 16, 16]])
-    game_t, score = game.merge(game.state, 'right')
+    game_t, score = game._merge(game.state, 'right')
     assert(np.array_equal(game_t, expected))
     assert(score == 128)
 
@@ -60,7 +60,7 @@ def test_right():
                          [0, 0, 0, 0],
                          [32, 8, 4, 2],
                          [0, 0, 0, 4]])
-    game_t, score = game.merge(game.state, 'right')
+    game_t, score = game._merge(game.state, 'right')
     assert(np.array_equal(game_t, expected))
     assert(score == 0)
 
@@ -73,7 +73,7 @@ def test_right():
                          [0, 0, 0, 16],
                          [0, 0, 8, 2],
                          [0, 0, 2, 8]])
-    game_t, score = game.merge(game.state, 'right')
+    game_t, score = game._merge(game.state, 'right')
     assert(np.array_equal(game_t, expected))
     assert(score == 48)
 
@@ -86,7 +86,7 @@ def test_right():
                          [0, 2, 4, 2],
                          [0, 2, 4, 2],
                          [0, 2, 4, 2]])
-    game_t, score = game.merge(game.state, 'right')
+    game_t, score = game._merge(game.state, 'right')
     assert(np.array_equal(game_t, expected))
     assert(score == 0)
 
@@ -101,7 +101,7 @@ def test_left():
                          [0, 0, 0, 0],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_t, score = game.merge(game.state, 'left')
+    game_t, score = game._merge(game.state, 'left')
     assert(np.array_equal(game_t, expected))
     assert(score == 32)
 
@@ -114,7 +114,7 @@ def test_left():
                          [16, 16, 0, 0],
                          [16, 16, 0, 0],
                          [16, 16, 0, 0]])
-    game_t, score = game.merge(game.state, 'left')
+    game_t, score = game._merge(game.state, 'left')
     assert(np.array_equal(game_t, expected))
     assert(score == 128)
 
@@ -127,7 +127,7 @@ def test_left():
                          [0, 0, 0, 0],
                          [32, 8, 4, 2],
                          [4, 0, 0, 0]])
-    game_t, score = game.merge(game.state, 'left')
+    game_t, score = game._merge(game.state, 'left')
     assert(np.array_equal(game_t, expected))
     assert(score == 0)
 
@@ -140,7 +140,7 @@ def test_left():
                          [16, 0, 0, 0],
                          [8, 2, 0, 0],
                          [2, 8, 0, 0]])
-    game_t, score = game.merge(game.state, 'left')
+    game_t, score = game._merge(game.state, 'left')
     assert(np.array_equal(game_t, expected))
     assert(score == 48)
 
@@ -153,7 +153,7 @@ def test_left():
                          [2, 4, 2, 0],
                          [2, 4, 2, 0],
                          [2, 4, 2, 0]])
-    game_t, score = game.merge(game.state, 'left')
+    game_t, score = game._merge(game.state, 'left')
     assert(np.array_equal(game_t, expected))
     assert(score == 0)
 
@@ -168,7 +168,7 @@ def test_up():
                          [0, 0, 0, 0],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_t, score = game.merge(game.state, 'up')
+    game_t, score = game._merge(game.state, 'up')
     assert(np.array_equal(game_t, expected))
     assert(score == 32)
 
@@ -181,7 +181,7 @@ def test_up():
                          [16, 16, 16, 16],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_t, score = game.merge(game.state, 'up')
+    game_t, score = game._merge(game.state, 'up')
     assert(np.array_equal(game_t, expected))
     assert(score == 128)
 
@@ -194,7 +194,7 @@ def test_up():
                          [0, 0, 4, 2],
                          [0, 0, 0, 4],
                          [0, 0, 0, 0]])
-    game_t, score = game.merge(game.state, 'up')
+    game_t, score = game._merge(game.state, 'up')
     assert(np.array_equal(game_t, expected))
     assert(score == 0)
 
@@ -207,7 +207,7 @@ def test_up():
                          [0, 0, 2, 8],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game_t, score = game.merge(game.state, 'up')
+    game_t, score = game._merge(game.state, 'up')
     assert(np.array_equal(game_t, expected))
     assert(score == 48)
 
@@ -220,7 +220,7 @@ def test_up():
                          [4, 2, 2, 2],
                          [2, 4, 4, 4],
                          [8, 0, 0, 0]])
-    game_t, score = game.merge(game.state, 'up')
+    game_t, score = game._merge(game.state, 'up')
     assert(np.array_equal(game_t, expected))
     assert(score == 0)
 
@@ -235,7 +235,7 @@ def test_down():
                          [0, 0, 0, 0],
                          [0, 0, 0, 0],
                          [0, 0, 0, 32]])
-    game_t, score = game.merge(game.state, 'down')
+    game_t, score = game._merge(game.state, 'down')
     assert(np.array_equal(game_t, expected))
     assert(score == 32)
 
@@ -248,7 +248,7 @@ def test_down():
                          [0, 0, 0, 0],
                          [16, 16, 16, 16],
                          [16, 16, 16, 16]])
-    game_t, score = game.merge(game.state, 'down')
+    game_t, score = game._merge(game.state, 'down')
     assert(np.array_equal(game_t, expected))
     assert(score == 128)
 
@@ -261,7 +261,7 @@ def test_down():
                          [0, 0, 0, 16],
                          [0, 0, 4, 2],
                          [32, 8, 8, 4]])
-    game_t, score = game.merge(game.state, 'down')
+    game_t, score = game._merge(game.state, 'down')
     assert(np.array_equal(game_t, expected))
     assert(score == 0)
 
@@ -274,7 +274,7 @@ def test_down():
                          [0, 0, 0, 0],
                          [0, 0, 8, 2],
                          [16, 16, 2, 8]])
-    game_t, score = game.merge(game.state, 'down')
+    game_t, score = game._merge(game.state, 'down')
     assert(np.array_equal(game_t, expected))
     assert(score == 48)
 
@@ -287,7 +287,7 @@ def test_down():
                          [4, 4, 4, 4],
                          [2, 2, 2, 2],
                          [8, 4, 4, 4]])
-    game_t, score = game.merge(game.state, 'down')
+    game_t, score = game._merge(game.state, 'down')
     assert(np.array_equal(game_t, expected))
     assert(score == 0)
 

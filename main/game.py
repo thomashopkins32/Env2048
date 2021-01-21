@@ -4,7 +4,9 @@ import copy
 class GameState:
     def __init__(self, state=None, score=0):
         if state is None:
-            self.state = np.zeros((4,4), dtype=int)
+            state = np.zeros((4,4), dtype=int)
+            state = self._add_tile(state)
+            self.state = self._add_tile(state)
         else:
             self.state = copy.deepcopy(state)
         self.score = score
