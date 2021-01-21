@@ -24,6 +24,21 @@ def test_old_game():
     assert(np.count_nonzero(game.state == 2) == 16)
 
 
+def test_add_tile():
+    game = GameState(state=np.array([[0,0,0,0],
+                                     [0,0,0,0],
+                                     [0,0,0,0],
+                                     [0,0,0,0]]))
+    new_state = game._add_tile(game.state)
+    assert(np.count_nonzero(new_state == 0) == 15)
+    assert(np.count_nonzero(new_state > 4) == 0)
+    assert(np.count_nonzero(new_state < 0) == 0)
+    two_count = np.count_nonzero(new_state == 2)
+    four_count = np.count_nonzero(new_state == 4)
+    assert((two_count == 0 and four_count == 1) or
+           (two_count == 1 and four_count == 0))
+
+
 def test_right():
     # test normal
     game = GameState(state=np.array([[0, 0, 16, 16],
