@@ -1,10 +1,11 @@
 import numpy as np
 import copy
 
+
 class GameState:
     def __init__(self, state=None, score=0):
         if state is None:
-            state = np.zeros((4,4), dtype=int)
+            state = np.zeros((4, 4), dtype=int)
             state = self._add_tile(state)
             self.state = self._add_tile(state)
         else:
@@ -40,7 +41,6 @@ class GameState:
             new_state[tile[0], tile[1]] = 4
         return new_state
 
-    
     def is_lost(self):
         '''
         Determines if the current state of the
@@ -52,14 +52,35 @@ class GameState:
             True if a merge or flush is possible
             False otherwise
         '''
-        
-
+        if np.count_nonzero(self.state == 0) > 0:
+            return False
+        # check for adjacent matching
+        # tiles in 4 directions at each tile
+        for i in range(4):
+            for j in range(4):
+                # left
+                if j-1 >= 0:
+                    if self.state[i][j] == self.state[i][j-1]:
+                        return False
+                # right
+                if j+1 < 4:
+                    if self.state[i][j] == self.state[i][j+1]:
+                        return False
+                # up
+                if i-1 >= 0:
+                    if self.state[i][j] == self.state[i-1][j]:
+                        return False
+                # down
+                if i+1 < 4:
+                    if self.state[i][j] == self.state[i+1][j]:
+                        return False
+        return True
 
     def move(self, direction):
         '''
         Makes a move in a given direction and adds to
         the score of the current game
-        
+
         Parameters
         ----------
         direction : str
@@ -71,13 +92,14 @@ class GameState:
             merges tiles in specified direction,
             adds one new tile, and adds to the score
         '''
-        # check for lost game
         if self.lost:
             return self
-        # make move
-        flushed_state = self._flush(self.state, direction)
-        merged_state, score = self._merge(flushed_state, direction)
-        semi_state = self._flush(merged_state, direction)
+        # move is a rotate, flush, merge, flush, rotate back
+        rotated_state = self._rotate(self.state, direction)
+        flushed_state = self._flush(rotated_state)
+        merged_state, score = self._merge(flushed_state)
+        flushed_state = self._flush(merged_state)
+        semi_state = self._rotate(flushed_state, direction, reverse=True)
         # no change
         if np.array_equal(semi_state, self.state):
             return self
@@ -85,7 +107,6 @@ class GameState:
         full_state = self._add_tile(semi_state)
         full_score = self.score + score
         return GameState(state=full_state, score=full_score)
-
 
     def _rotate(self, state, direction, reverse=False):
         '''
@@ -109,21 +130,20 @@ class GameState:
             COPY of original state after rotation
         '''
         c_state = copy.deepcopy(state)
-        rotation_dict = { 'right':2,
-                          'left':0,
-                          'up':1,
-                          'down':3 }
+        rotation_dict = {'right': 2,
+                         'left': 0,
+                         'up': 1,
+                         'down': 3}
         num_rotations = rotation_dict[direction]
         if reverse:
             num_rotations = 4 - num_rotations
         return np.rot90(c_state, k=num_rotations)
 
-
-    def _merge(self, state, direction):
+    def _merge(self, state):
         '''
         PRIVATE FUNCTION
 
-        Merges same tiles in given direction and
+        Merges same tiles in the left direction and
         calculates score of merge. Score is determined
         by the value of the tile after merging.
         So, 8 merged with 8 gives a score of 16.
@@ -132,8 +152,6 @@ class GameState:
         ----------
         state : np.array
             array to merge tiles
-        direction : str
-            left, right, up, down
 
         Returns
         -------
@@ -144,8 +162,6 @@ class GameState:
         '''
         c_state = copy.deepcopy(state)
         score = 0
-        # rotate array for merging
-        c_state = self._rotate(c_state, direction)
         # perform left merge
         for i in range(4):
             for j in range(4):
@@ -157,24 +173,19 @@ class GameState:
                             c_state[i][k] = 0
                             score += value
                             break
-        # rotate array back to original orientation
-        c_state = self._rotate(c_state, direction, reverse=True)
         return c_state, score
 
-
-    def _flush(self, state, direction):
+    def _flush(self, state):
         '''
         PRIVATE FUNCTION
 
         Moves the tiles along empty space, 0s, in
-        the given direction
+        the left direction
 
         Parameters
         ----------
         state : np.array
             current state of the board
-        direction : str
-            direction to move in
 
         Returns
         -------
@@ -184,8 +195,6 @@ class GameState:
             the given direction
         '''
         c_state = copy.deepcopy(state)
-        # rotate array for flushing
-        c_state = self._rotate(c_state, direction)
         # peform left flush
         for i in range(4):
             for j in range(4):
@@ -195,7 +204,4 @@ class GameState:
                             c_state[i][j] = c_state[i][k]
                             c_state[i][k] = 0
                             break
-        # rotate array back to original orientation
-        c_state = self._rotate(c_state, direction, reverse=True)
         return c_state
-
