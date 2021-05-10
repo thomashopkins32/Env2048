@@ -13,18 +13,19 @@ console = curses.initscr()
 console.keypad(True)
 console.clear()
 
-def print_state(state):
+def print_game(game):
+    console.clear()
     for i in range(N):
-        console.addstr(i, 0, str(list(state[i])))
-    console.addstr(N, 0, f'{state}')
+        console.addstr(i, 0, str(list(game.state[i])))
+    console.addstr(N, 0, f'Score: {game.score}')
     console.refresh()
 
 game = GameState(size=N)
-print_state(game.state)
+print_game(game)
 while not game.lost:
     key = console.getkey()
     move = KEY_DICT[key]
     game.move(move)
-    print_state(game.state)
+    print_game(game)
 
 curses.endwin()
