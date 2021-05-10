@@ -34,7 +34,7 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
 
 
 setup(
-    name='ai2048',
+    name='AI2048',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="Collection of intelligent algorithms that attempt to beat the game 2048.",
@@ -51,7 +51,7 @@ setup(
     },
     include_package_data=True,
     package_data={
-        'ai2048': [
+        'AI2048': [
             # When adding files here, remember to update MANIFEST.in as well,
             # or else they will not be included in the distribution on PyPI!
             # 'path/to/data_file',

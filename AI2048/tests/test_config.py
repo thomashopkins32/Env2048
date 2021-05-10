@@ -1,6 +1,7 @@
 import json
 import os
-import main.config as config
+
+import AI2048.config as config
 
 
 def test_config():
