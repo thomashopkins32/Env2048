@@ -1,4 +1,3 @@
-import json
 import os
 
 import AI2048.config as config
@@ -22,4 +21,3 @@ def test_config():
     assert('t5' in cfg.keys())
     assert(cfg['t5'] == 2)
     os.remove('test.json')
-

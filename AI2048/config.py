@@ -50,4 +50,3 @@ def append(filename, config_dict):
     cfg.update(config_dict)
     with open(filename, 'w') as config_file:
         json.dump(config_dict, config_file)
-

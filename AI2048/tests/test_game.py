@@ -17,10 +17,10 @@ def test_new_game():
 
 def test_old_game():
     game = GameState()
-    state=np.array([[2, 2, 2, 2],
-                    [2, 2, 2, 2],
-                    [2, 2, 2, 2],
-                    [2, 2, 2, 2]])
+    state = np.array([[2, 2, 2, 2],
+                      [2, 2, 2, 2],
+                      [2, 2, 2, 2],
+                      [2, 2, 2, 2]])
     game.state = state
     assert(game.state.shape == (4, 4))
     assert(np.count_nonzero(game.state == 2) == 16)
@@ -28,10 +28,10 @@ def test_old_game():
 
 def test_add_tile():
     game = GameState()
-    state=np.array([[0, 0, 0, 0],
-                    [0, 0, 0, 0],
-                    [0, 0, 0, 0],
-                    [0, 0, 0, 0]])
+    state = np.array([[0, 0, 0, 0],
+                      [0, 0, 0, 0],
+                      [0, 0, 0, 0],
+                      [0, 0, 0, 0]])
     game.state = state
     game._add_tile()
     assert(np.count_nonzero(game.state == 0) == 15)
@@ -258,7 +258,7 @@ def test_move():
                       [0, 0, 0, 0],
                       [0, 0, 0, 0]])
     game.state = state
-    score = game.move('right')
+    _ = game.move('right')
     assert(game.score == 16)
     assert(game.state[0, 3] == 16)
     assert(game.state[1, 3] == 4)
@@ -271,7 +271,7 @@ def test_move():
                       [0, 0, 0, 0],
                       [0, 0, 0, 0]])
     game.state = state
-    score = game.move('left')
+    _ = game.move('left')
     assert(game.score == 16)
     assert(game.state[0, 0] == 16)
     assert(game.state[1, 0] == 4)
@@ -284,7 +284,7 @@ def test_move():
                       [8, 0, 0, 0],
                       [0, 0, 0, 0]])
     game.state = state
-    score = game.move('up')
+    _ = game.move('up')
     assert(game.score == 16)
     assert(game.state[0, 0] == 16)
     assert(game.state[1, 1] == 4)
@@ -298,7 +298,7 @@ def test_move():
                       [8, 0, 0, 0],
                       [0, 0, 0, 0]])
     game.state = state
-    score = game.move('down')
+    _ = game.move('down')
     assert(game.score == 16)
     assert(game.state[3, 0] == 16)
     assert(game.state[3, 1] == 4)
