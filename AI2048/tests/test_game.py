@@ -304,3 +304,11 @@ def test_move():
     assert(game.state[3, 1] == 4)
     assert(game.state[2, 1] == 8)
     assert(np.count_nonzero(game.state == 0) == 12)
+
+
+def test_large_game():
+    game = GameState(size=50)
+    game.move('right')
+    game.move('left')
+    game.move('up')
+    game.move('down')
