@@ -81,7 +81,7 @@ class GameState:
             score from this move
         '''
         if self.lost:
-            return
+            return 0
         prev_state = np.copy(self.state)
         # move is a rotate, flush, merge, flush, rotate back
         self._rotate(direction)
@@ -89,12 +89,12 @@ class GameState:
         score = self._merge()
         self._flush()
         self._rotate(direction, reverse=True)
-        # no change
-        if np.array_equal(prev_state, self.state):
-            return
-        # add tile and score
-        self._add_tile()
+        self.lost = self.is_lost()
         self.score += score
+        if np.array_equal(prev_state, self.state) or self.lost:
+            return score
+        # add tile
+        self._add_tile()
         return score
 
     def _rotate(self, direction, reverse=False):
@@ -150,6 +150,8 @@ class GameState:
                             self.state[i][j] = value
                             self.state[i][k] = 0
                             score += value
+                            break
+                        if self.state[i][k] != 0:
                             break
         return score
 

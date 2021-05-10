@@ -173,6 +173,22 @@ def test_merge():
     assert(np.array_equal(game.state, expected))
     assert(score == 48)
 
+    # test blocked merge
+    game = GameState()
+    state = np.array([[8, 4, 0, 8],
+                      [4, 2, 4, 0],
+                      [2, 2, 2, 2],
+                      [8, 2, 8, 2]])
+    expected = np.array([[8, 4, 0, 8],
+                         [4, 2, 4, 0],
+                         [4, 0, 4, 0],
+                         [8, 2, 8, 2]])
+    game.state = state
+    score = game._merge()
+    print(game.state)
+    assert(np.array_equal(game.state, expected))
+    assert(score == 8)
+
 
 def test_flush():
     # normal flush
