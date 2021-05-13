@@ -2,6 +2,7 @@
 Unit testing for GameState module
 '''
 import numpy as np
+from bitarray import bitarray
 
 from AI2048.game import GameState
 
@@ -328,3 +329,14 @@ def test_large_game():
     game.move('left')
     game.move('up')
     game.move('down')
+
+def test_compact():
+    game = GameState(size=4)
+    state = np.array([[8, 8, 0, 0],
+                      [0, 4, 0, 0],
+                      [0, 0, 0, 0],
+                      [0, 0, 0, 0]])
+    expected = bitarray('0011001100000000000000100000000000000000000000000000000000000000')
+    game.state = state
+    bitarr = game.compact()
+    assert(bitarr == expected)

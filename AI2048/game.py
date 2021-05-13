@@ -1,4 +1,7 @@
 import numpy as np
+from bitarray import bitarray
+
+import math
 
 
 class GameState:
@@ -9,6 +12,46 @@ class GameState:
         self.score = 0
         self.size = size
         self.lost = self.is_lost()
+
+    def compact(self):
+        '''
+        Creates a compact form of the game state
+        NOTE: only works for 4x4 board
+
+        Returns
+        -------
+        bitarray
+            length 64 bit array where every 4 bits is
+            a tile in the game board
+        '''
+        if self.size != 4:
+            return None
+        ba = bitarray()
+        for i in range(self.size):
+            for j in range(self.size):
+                bs = self._convert_tile(self.state[i][j])
+                ba.extend(bs)
+        return ba
+
+    def _convert_tile(self, x):
+        '''
+        Converts a power of 2 to its binary form
+
+        Parameters
+        ----------
+        x : int
+            power of 2
+
+        Returns
+        -------
+        str
+            string of bits of log_2(x)
+        '''
+        if x == 0:
+            return f'{0:04b}'
+        y = int(math.log(x, 2))
+        mask = (1 << 4) - 1
+        return f'{y & mask:04b}'
 
     def _add_tile(self):
         '''
