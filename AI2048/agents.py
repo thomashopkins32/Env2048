@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from AI2048 import config
 from AI2048.game import GameState
 
@@ -16,9 +18,10 @@ class Agent:
     def get_config(self):
         return config.read(f'./config/{self.name}.json')
 
+    @abstractmethod
     def run(self, game_display):
         ''' Plays the game based on configuration file '''
-        abstract
+        pass
 
 
 class ManualTextAgent(Agent):
@@ -34,7 +37,7 @@ class ManualTextAgent(Agent):
         game_display.show(game)
         while not game.lost:
             move = input('Enter a move (l, r, u, d): ')
-            if not move in self.move_dict.keys():
+            if move not in self.move_dict.keys():
                 break
             game.move(self.move_dict[move])
             game_display.show(game)

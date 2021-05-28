@@ -7,6 +7,31 @@ import importlib
 from AI2048 import config
 
 
+COLOR_DICT = {2: '#c3c8c9',
+              4: '#67ccf7',
+              8: '#1c4882',
+              16: '#2b1c82',
+              32: '#481c82',
+              64: '#82521c',
+              128: '#b7591b',
+              256: '#c7cc49',
+              512: '#8fcc49',
+              1024: '#1d4c22',
+              2048: 'dd6a6c'}
+
+STYLE_DICT = {2: 'T2.TLabel',
+              4: 'T4.TLabel',
+              8: 'T8.TLabel',
+              16: 'T16.TLabel',
+              32: 'T32.TLabel',
+              64: 'T64.TLabel',
+              128: 'T128.TLabel',
+              256: 'T256.TLabel',
+              512: 'T512.TLabel',
+              1024: 'T1024.TLabel',
+              2048: 'T2048.TLabel'}
+
+
 class GameWindow(ttk.Frame):
     '''
     Game window for the 2048 game.
@@ -75,22 +100,14 @@ class NavBar(ttk.Frame):
         self.agent_combo.state(['readonly'])
         self.agent_combo.grid(column=2, row=0, sticky=(N, S, E, W))
 
-        self.configure_btn = ttk.Button(self, text='Config', command=self._config_agent)
-        self.configure_btn.grid(column=3, row=0, sticky=(N, S, W))
-
         self.start_btn = ttk.Button(self, text='Start', command=self.root._start)
-        self.start_btn.grid(column=4, row=0, sticky=(N, S, E))
+        self.start_btn.grid(column=3, row=0, sticky=(N, S, E, W))
 
         self.columnconfigure(0, weight=2)
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
-        self.columnconfigure(4, weight=1)
         self.rowconfigure(0, weight=1)
-
-    def _config_agent(self):
-        ''' Pulls up configure window (see ConfigWindow class) '''
-        pass
 
     def set_score(self, score):
         self.score_val.set(f'Score: {score}')
@@ -113,7 +130,7 @@ class Board(ttk.Frame):
                 self.tile_vars[i].append(tk.StringVar())
                 self.tiles[i].append(ttk.Label(self, textvariable=self.tile_vars[i][j],
                                                font=('Arial', 20), anchor='center'))
-                self.tile_vars[i][j].set('0')
+                self.tile_vars[i][j].set('')
                 self.tiles[i][j].grid(column=j, row=i, sticky=(N, S, E, W))
         for i in range(size):
             self.rowconfigure(i, weight=1)
@@ -123,10 +140,18 @@ class Board(ttk.Frame):
     def set_board(self, state):
         for i in range(self.size):
             for j in range(self.size):
-                self.tile_vars[i][j].set(str(state[i][j]))
+                if state[i][j] != 0:
+                    self.tile_vars[i][j].set(str(state[i][j]))
+                    if state[i][j] > 2048:
+                        self.tiles[i][j]['style'] = 'TLarge.TLabel'
+                    else:
+                        self.tiles[i][j]['style'] = STYLE_DICT[state[i][j]]
+                else:
+                    self.tile_vars[i][j].set('')
+                    self.tiles[i][j]['style'] = 'TLabel'
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     root = tk.Tk()
     root.title('2048AI')
     root.geometry('900x900')
@@ -134,4 +159,8 @@ if __name__=='__main__':
     mainframe.grid(column=0, row=0, sticky=(N, S, E, W))
     root.rowconfigure(0, weight=1)
     root.columnconfigure(0, weight=1)
+    s = ttk.Style()
+    for num, stylename in STYLE_DICT.items():
+        s.configure(stylename, background=COLOR_DICT[num])
+    s.configure('TLarge.TLabel', background='#190202')
     root.mainloop()

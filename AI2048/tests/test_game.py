@@ -330,6 +330,7 @@ def test_large_game():
     game.move('up')
     game.move('down')
 
+
 def test_compact():
     game = GameState(size=4)
     state = np.array([[8, 8, 0, 0],
