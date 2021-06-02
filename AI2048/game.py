@@ -1,57 +1,38 @@
 import numpy as np
-from bitarray import bitarray
+from tf_agents.environments import py_environment
+from tf_agents.specs import array_spec
+from tf_agents.trajectories import time_step as ts
 
-import math
 
-
-class GameState:
+class Env2048(py_environment.PyEnvironment):
     def __init__(self, size=4):
-        self.state = np.zeros((size, size), dtype=int)
+        super(Env2048, self).__init__()
+        # set of possible actions {0: left, 1: right, 2: up, 3: down}
+        self._action_spec = array_spec.BoundedArraySpec(shape=(), dtype=np.int32,
+                                                        minimum=0, maximum=3,
+                                                        name='action')
+        self._observation_spec = array_spec.BoundedArraySpec(shape=(size, size),
+                                                             dtype=np.int32,
+                                                             name='observation')
+        self._state = np.zeros((size, size), dtype=np.int32)
+        self._episode_ended = self.is_lost()
         self._add_tile()
         self._add_tile()
         self.score = 0
         self.size = size
-        self.lost = self.is_lost()
 
-    def compact(self):
-        '''
-        Creates a compact form of the game state
-        NOTE: only works for 4x4 board
+    def action_spec(self):
+        return self._action_spec
 
-        Returns
-        -------
-        bitarray
-            length 64 bit array where every 4 bits is
-            a tile in the game board
-        '''
-        if self.size != 4:
-            return None
-        ba = bitarray()
-        for i in range(self.size):
-            for j in range(self.size):
-                bs = self._convert_tile(self.state[i][j])
-                ba.extend(bs)
-        return ba
+    def observation_spec(self):
+        return self._observation_spec
 
-    def _convert_tile(self, x):
-        '''
-        Converts a power of 2 to its binary form
-
-        Parameters
-        ----------
-        x : int
-            power of 2
-
-        Returns
-        -------
-        str
-            string of bits of log_2(x)
-        '''
-        if x == 0:
-            return f'{0:04b}'
-        y = int(math.log(x, 2))
-        mask = (1 << 4) - 1
-        return f'{y & mask:04b}'
+    def _reset(self):
+        self._state = np.zeros((self.size, self.size), dtype=np.int32)
+        self._add_tile()
+        self._add_tile()
+        self.score = 0
+        return ts.restart(np.array(self._state, dtype=np.int32))
 
     def _add_tile(self):
         '''
@@ -62,16 +43,16 @@ class GameState:
 
         Modifies
         --------
-        self.state : np.array
+        self._state : np.array
             adds a new tile to the current state
         '''
-        possible_tiles = np.argwhere(self.state == 0)
+        possible_tiles = np.argwhere(self._state == 0)
         random_idx = np.random.randint(0, possible_tiles.shape[0])
         tile = possible_tiles[random_idx]
         if np.random.rand() < 0.9:
-            self.state[tile[0], tile[1]] = 2
+            self._state[tile[0], tile[1]] = 2
         else:
-            self.state[tile[0], tile[1]] = 4
+            self._state[tile[0], tile[1]] = 4
 
     def is_lost(self):
         '''
@@ -84,7 +65,7 @@ class GameState:
             True if a merge or flush is possible
             False otherwise
         '''
-        if np.count_nonzero(self.state == 0) > 0:
+        if np.count_nonzero(self._state == 0) > 0:
             return False
         # check for adjacent matching
         # tiles in 4 directions at each tile
@@ -92,55 +73,57 @@ class GameState:
             for j in range(self.size):
                 # left
                 if j-1 >= 0:
-                    if self.state[i][j] == self.state[i][j-1]:
+                    if self._state[i][j] == self._state[i][j-1]:
                         return False
                 # right
                 if j+1 < self.size:
-                    if self.state[i][j] == self.state[i][j+1]:
+                    if self._state[i][j] == self._state[i][j+1]:
                         return False
                 # up
                 if i-1 >= 0:
-                    if self.state[i][j] == self.state[i-1][j]:
+                    if self._state[i][j] == self._state[i-1][j]:
                         return False
                 # down
                 if i+1 < self.size:
-                    if self.state[i][j] == self.state[i+1][j]:
+                    if self._state[i][j] == self._state[i+1][j]:
                         return False
         return True
 
-    def move(self, direction):
+    def _step(self, action):
         '''
         Makes a move in a given direction and adds to
         the score of the current game
 
         Parameters
         ----------
-        direction : str
-            left, right, up, or down
+        action : int
+            0 : left, 1 : up, 2: right, 3 : down
 
         Returns
         -------
         int
             score from this move
         '''
-        if self.lost:
-            return 0
-        prev_state = np.copy(self.state)
+        if self._episode_ended:
+            return self.reset()
+        prev_state = np.copy(self._state)
         # move is a rotate, flush, merge, flush, rotate back
-        self._rotate(direction)
+        self._rotate(action)
         self._flush()
-        score = self._merge()
+        reward = self._merge()
         self._flush()
-        self._rotate(direction, reverse=True)
-        self.lost = self.is_lost()
-        self.score += score
-        if np.array_equal(prev_state, self.state) or self.lost:
-            return score
+        self._rotate(action, reverse=True)
+        self._episode_ended = self.is_lost()
+        self.score += reward
+        if np.array_equal(prev_state, self._state):
+            return ts.transition(np.array(self._state, dtype=np.int32), reward=0.0, discount=1.0)
+        if self._episode_ended:
+            return ts.termination(np.array(self._state, dtype=np.int32), reward)
         # add tile
         self._add_tile()
-        return score
+        return ts.transition(np.array(self._state, dtype=np.int32), reward=reward, discount=1.0)
 
-    def _rotate(self, direction, reverse=False):
+    def _rotate(self, action, reverse=False):
         '''
         PRIVATE FUNCTION
 
@@ -149,19 +132,16 @@ class GameState:
 
         Parameters
         ----------
-        direction : str
+        action : int
             direction to determine rotation angle
+            0 : left, 1 : up, 2 : right, 3 : down
         reverse : bool, optional
             flag to rotate back to original direction
         '''
-        rotation_dict = {'right': 2,
-                         'left': 0,
-                         'up': 1,
-                         'down': 3}
-        num_rotations = rotation_dict[direction]
+        num_rotations = action
         if reverse:
             num_rotations = 4 - num_rotations
-        self.state = np.rot90(self.state, k=num_rotations)
+        self._state = np.rot90(self._state, k=num_rotations)
 
     def _merge(self):
         '''
@@ -174,7 +154,7 @@ class GameState:
 
         Modifies
         --------
-        self.state : np.array
+        self._state : np.array
             merges the tiles in the current state
 
         Returns
@@ -186,15 +166,15 @@ class GameState:
         # perform left merge
         for i in range(self.size):
             for j in range(self.size):
-                if self.state[i][j] != 0:
+                if self._state[i][j] != 0:
                     for k in range(j+1, self.size):
-                        if self.state[i][j] == self.state[i][k]:
-                            value = 2*self.state[i][j]
-                            self.state[i][j] = value
-                            self.state[i][k] = 0
+                        if self._state[i][j] == self._state[i][k]:
+                            value = 2*self._state[i][j]
+                            self._state[i][j] = value
+                            self._state[i][k] = 0
                             score += value
                             break
-                        if self.state[i][k] != 0:
+                        if self._state[i][k] != 0:
                             break
         return score
 
@@ -207,16 +187,15 @@ class GameState:
 
         Modifies
         --------
-        self.state : np.array
+        self._state : np.array
             moves tiles in current state
         '''
         # peform left flush
         for i in range(self.size):
             for j in range(self.size):
-                if self.state[i][j] == 0:
+                if self._state[i][j] == 0:
                     for k in range(j+1, self.size):
-                        if self.state[i][k] != 0:
-                            self.state[i][j] = self.state[i][k]
-                            self.state[i][k] = 0
+                        if self._state[i][k] != 0:
+                            self._state[i][j] = self._state[i][k]
+                            self._state[i][k] = 0
                             break
-        return self.state

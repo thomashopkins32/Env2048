@@ -2,51 +2,50 @@
 Unit testing for GameState module
 '''
 import numpy as np
-from bitarray import bitarray
 
-from AI2048.game import GameState
+from AI2048.game import Env2048
 
 
 def test_new_game():
-    game = GameState()
-    assert(game.state.shape == (4, 4))
-    assert(np.count_nonzero(game.state == 0) == 14)
-    assert(np.count_nonzero(game.state < 0) == 0)
-    assert(np.count_nonzero(game.state > 0) == 2)
-    assert(np.count_nonzero(game.state > 4) == 0)
+    game = Env2048()
+    assert(game._state.shape == (4, 4))
+    assert(np.count_nonzero(game._state == 0) == 14)
+    assert(np.count_nonzero(game._state < 0) == 0)
+    assert(np.count_nonzero(game._state > 0) == 2)
+    assert(np.count_nonzero(game._state > 4) == 0)
 
 
 def test_old_game():
-    game = GameState()
+    game = Env2048()
     state = np.array([[2, 2, 2, 2],
                       [2, 2, 2, 2],
                       [2, 2, 2, 2],
                       [2, 2, 2, 2]])
-    game.state = state
-    assert(game.state.shape == (4, 4))
-    assert(np.count_nonzero(game.state == 2) == 16)
+    game._state = state
+    assert(game._state.shape == (4, 4))
+    assert(np.count_nonzero(game._state == 2) == 16)
 
 
 def test_add_tile():
-    game = GameState()
+    game = Env2048()
     state = np.array([[0, 0, 0, 0],
                       [0, 0, 0, 0],
                       [0, 0, 0, 0],
                       [0, 0, 0, 0]])
-    game.state = state
+    game._state = state
     game._add_tile()
-    assert(np.count_nonzero(game.state == 0) == 15)
-    assert(np.count_nonzero(game.state > 4) == 0)
-    assert(np.count_nonzero(game.state < 0) == 0)
-    two_count = np.count_nonzero(game.state == 2)
-    four_count = np.count_nonzero(game.state == 4)
+    assert(np.count_nonzero(game._state == 0) == 15)
+    assert(np.count_nonzero(game._state > 4) == 0)
+    assert(np.count_nonzero(game._state < 0) == 0)
+    two_count = np.count_nonzero(game._state == 2)
+    four_count = np.count_nonzero(game._state == 4)
     assert((two_count == 0 and four_count == 1) or
            (two_count == 1 and four_count == 0))
 
 
 def test_rotate():
     # no rotation (left)
-    game = GameState()
+    game = Env2048()
     state = np.array([[2, 4, 8, 16],
                       [32, 64, 128, 256],
                       [16, 4, 8, 2],
@@ -55,14 +54,14 @@ def test_rotate():
                          [32, 64, 128, 256],
                          [16, 4, 8, 2],
                          [256, 128, 64, 2]])
-    game.state = state
-    game._rotate('left')
-    assert(np.array_equal(game.state, expected))
-    game._rotate('left', reverse=True)
-    assert(np.array_equal(game.state, expected))
+    game._state = state
+    game._rotate(0)
+    assert(np.array_equal(game._state, expected))
+    game._rotate(0, reverse=True)
+    assert(np.array_equal(game._state, expected))
 
     # 90 rotation (up)
-    game = GameState()
+    game = Env2048()
     state = np.array([[2, 4, 8, 16],
                       [32, 64, 128, 256],
                       [16, 4, 8, 2],
@@ -72,14 +71,14 @@ def test_rotate():
                          [4, 64, 4, 128],
                          [2, 32, 16, 256]])
     expected2 = np.copy(state)
-    game.state = state
-    game._rotate('up')
-    assert(np.array_equal(game.state, expected))
-    game._rotate('up', reverse=True)
-    assert(np.array_equal(game.state, expected2))
+    game._state = state
+    game._rotate(1)
+    assert(np.array_equal(game._state, expected))
+    game._rotate(1, reverse=True)
+    assert(np.array_equal(game._state, expected2))
 
     # 180 rotation (right)
-    game = GameState()
+    game = Env2048()
     state = np.array([[2, 4, 8, 16],
                       [32, 64, 128, 256],
                       [16, 4, 8, 2],
@@ -89,14 +88,14 @@ def test_rotate():
                          [256, 128, 64, 32],
                          [16, 8, 4, 2]])
     expected2 = np.copy(state)
-    game.state = state
-    game._rotate('right')
-    assert(np.array_equal(game.state, expected))
-    game._rotate('right', reverse=True)
-    assert(np.array_equal(game.state, expected2))
+    game._state = state
+    game._rotate(2)
+    assert(np.array_equal(game._state, expected))
+    game._rotate(2, reverse=True)
+    assert(np.array_equal(game._state, expected2))
 
     # 270 rotation (down)
-    game = GameState()
+    game = Env2048()
     state = np.array([[2, 4, 8, 16],
                       [32, 64, 128, 256],
                       [16, 4, 8, 2],
@@ -106,16 +105,16 @@ def test_rotate():
                          [64, 8, 128, 8],
                          [2, 2, 256, 16]])
     expected2 = np.copy(state)
-    game.state = state
-    game._rotate('down')
-    assert(np.array_equal(game.state, expected))
-    game._rotate('down', reverse=True)
-    assert(np.array_equal(game.state, expected2))
+    game._state = state
+    game._rotate(3)
+    assert(np.array_equal(game._state, expected))
+    game._rotate(3, reverse=True)
+    assert(np.array_equal(game._state, expected2))
 
 
 def test_merge():
     # test normal
-    game = GameState()
+    game = Env2048()
     state = np.array([[0, 0, 16, 16],
                       [0, 0, 0, 0],
                       [0, 0, 0, 0],
@@ -124,13 +123,13 @@ def test_merge():
                          [0, 0, 0, 0],
                          [0, 0, 0, 0],
                          [0, 0, 0, 0]])
-    game.state = state
+    game._state = state
     score = game._merge()
-    assert(np.array_equal(game.state, expected))
+    assert(np.array_equal(game._state, expected))
     assert(score == 32)
 
     # test full board
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 8, 8, 8],
                       [8, 8, 8, 8],
                       [8, 8, 8, 8],
@@ -139,13 +138,13 @@ def test_merge():
                          [16, 0, 16, 0],
                          [16, 0, 16, 0],
                          [16, 0, 16, 0]])
-    game.state = state
+    game._state = state
     score = game._merge()
-    assert(np.array_equal(game.state, expected))
+    assert(np.array_equal(game._state, expected))
     assert(score == 128)
 
     # test no change
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 16, 0, 0],
                       [0, 0, 0, 0],
                       [32, 8, 4, 2],
@@ -154,13 +153,13 @@ def test_merge():
                          [0, 0, 0, 0],
                          [32, 8, 4, 2],
                          [4, 0, 0, 0]])
-    game.state = state
+    game._state = state
     score = game._merge()
-    assert(np.array_equal(game.state, expected))
+    assert(np.array_equal(game._state, expected))
     assert(score == 0)
 
     # test with distanced merge
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 0, 0, 8],
                       [8, 0, 0, 8],
                       [4, 0, 4, 2],
@@ -169,13 +168,13 @@ def test_merge():
                          [16, 0, 0, 0],
                          [8, 0, 0, 2],
                          [2, 8, 0, 0]])
-    game.state = state
+    game._state = state
     score = game._merge()
-    assert(np.array_equal(game.state, expected))
+    assert(np.array_equal(game._state, expected))
     assert(score == 48)
 
     # test blocked merge
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 4, 0, 8],
                       [4, 2, 4, 0],
                       [2, 2, 2, 2],
@@ -184,16 +183,16 @@ def test_merge():
                          [4, 2, 4, 0],
                          [4, 0, 4, 0],
                          [8, 2, 8, 2]])
-    game.state = state
+    game._state = state
     score = game._merge()
-    print(game.state)
-    assert(np.array_equal(game.state, expected))
+    print(game._state)
+    assert(np.array_equal(game._state, expected))
     assert(score == 8)
 
 
 def test_flush():
     # normal flush
-    game = GameState()
+    game = Env2048()
     state = np.array([[2, 0, 0, 2],
                       [0, 2, 0, 2],
                       [0, 0, 2, 2],
@@ -202,12 +201,12 @@ def test_flush():
                          [2, 2, 0, 0],
                          [2, 2, 0, 0],
                          [2, 0, 0, 0]])
-    game.state = state
+    game._state = state
     game._flush()
-    assert(np.array_equal(game.state, expected))
+    assert(np.array_equal(game._state, expected))
 
     # more complicated
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 4, 2, 8],
                       [2, 4, 2, 0],
                       [2, 0, 4, 2],
@@ -216,12 +215,12 @@ def test_flush():
                          [2, 4, 2, 0],
                          [2, 4, 2, 0],
                          [2, 4, 2, 0]])
-    game.state = state
+    game._state = state
     game._flush()
-    assert(np.array_equal(game.state, expected))
+    assert(np.array_equal(game._state, expected))
 
     # no change
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 4, 2, 8],
                       [2, 4, 2, 2],
                       [2, 2, 4, 2],
@@ -230,114 +229,102 @@ def test_flush():
                          [2, 4, 2, 2],
                          [2, 2, 4, 2],
                          [2, 4, 2, 2]])
-    game.state = state
+    game._state = state
     game._flush()
-    assert(np.array_equal(game.state, expected))
+    assert(np.array_equal(game._state, expected))
 
 
 def test_is_lost():
     # not lost with 0s
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 4, 2, 8],
                       [2, 4, 2, 0],
                       [2, 0, 4, 2],
                       [2, 4, 0, 2]])
-    game.state = state
+    game._state = state
     lost = game.is_lost()
     assert(lost is False)
 
     # not lost no 0s
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 16, 4, 2],
                       [4, 2, 16, 4],
                       [128, 4, 2, 8],
                       [128, 8, 4, 2]])
-    game.state = state
+    game._state = state
     lost = game.is_lost()
     assert(lost is False)
 
     # lost game
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 16, 4, 2],
                       [4, 2, 16, 4],
                       [128, 4, 2, 8],
                       [2, 8, 4, 2]])
-    game.state = state
+    game._state = state
     lost = game.is_lost()
     assert(lost is True)
 
 
 def test_move():
     # right
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 8, 0, 0],
                       [0, 4, 0, 0],
                       [0, 0, 0, 0],
                       [0, 0, 0, 0]])
-    game.state = state
-    _ = game.move('right')
+    game._state = state
+    _ = game._step(2)
     assert(game.score == 16)
-    assert(game.state[0, 3] == 16)
-    assert(game.state[1, 3] == 4)
-    assert(np.count_nonzero(game.state == 0) == 13)
+    assert(game._state[0, 3] == 16)
+    assert(game._state[1, 3] == 4)
+    assert(np.count_nonzero(game._state == 0) == 13)
 
     # left
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 8, 0, 0],
                       [0, 4, 0, 0],
                       [0, 0, 0, 0],
                       [0, 0, 0, 0]])
-    game.state = state
-    _ = game.move('left')
+    game._state = state
+    _ = game._step(0)
     assert(game.score == 16)
-    assert(game.state[0, 0] == 16)
-    assert(game.state[1, 0] == 4)
-    assert(np.count_nonzero(game.state == 0) == 13)
+    assert(game._state[0, 0] == 16)
+    assert(game._state[1, 0] == 4)
+    assert(np.count_nonzero(game._state == 0) == 13)
 
     # up
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 8, 0, 0],
                       [0, 4, 0, 0],
                       [8, 0, 0, 0],
                       [0, 0, 0, 0]])
-    game.state = state
-    _ = game.move('up')
+    game._state = state
+    _ = game._step(1)
     assert(game.score == 16)
-    assert(game.state[0, 0] == 16)
-    assert(game.state[1, 1] == 4)
-    assert(game.state[0, 1] == 8)
-    assert(np.count_nonzero(game.state == 0) == 12)
+    assert(game._state[0, 0] == 16)
+    assert(game._state[1, 1] == 4)
+    assert(game._state[0, 1] == 8)
+    assert(np.count_nonzero(game._state == 0) == 12)
 
     # down
-    game = GameState()
+    game = Env2048()
     state = np.array([[8, 8, 0, 0],
                       [0, 4, 0, 0],
                       [8, 0, 0, 0],
                       [0, 0, 0, 0]])
-    game.state = state
-    _ = game.move('down')
+    game._state = state
+    _ = game._step(3)
     assert(game.score == 16)
-    assert(game.state[3, 0] == 16)
-    assert(game.state[3, 1] == 4)
-    assert(game.state[2, 1] == 8)
-    assert(np.count_nonzero(game.state == 0) == 12)
+    assert(game._state[3, 0] == 16)
+    assert(game._state[3, 1] == 4)
+    assert(game._state[2, 1] == 8)
+    assert(np.count_nonzero(game._state == 0) == 12)
 
 
 def test_large_game():
-    game = GameState(size=50)
-    game.move('right')
-    game.move('left')
-    game.move('up')
-    game.move('down')
-
-
-def test_compact():
-    game = GameState(size=4)
-    state = np.array([[8, 8, 0, 0],
-                      [0, 4, 0, 0],
-                      [0, 0, 0, 0],
-                      [0, 0, 0, 0]])
-    expected = bitarray('0011001100000000000000100000000000000000000000000000000000000000')
-    game.state = state
-    bitarr = game.compact()
-    assert(bitarr == expected)
+    game = Env2048(size=50)
+    game._step(0)
+    game._step(1)
+    game._step(2)
+    game._step(3)

@@ -69,7 +69,7 @@ class GameWindow(ttk.Frame):
 
     def show(self, game_state):
         ''' Displays the given state in the window '''
-        self.board.set_board(game_state.state)
+        self.board.set_board(game_state._state)
         self.navbar.set_score(game_state.score)
         self.root.update_idletasks()
 

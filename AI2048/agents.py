@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from AI2048 import config
-from AI2048.game import GameState
+from AI2048.game import Env2048
 
 
 class Agent:
@@ -30,14 +30,13 @@ class ManualTextAgent(Agent):
         super(ManualTextAgent, self).__init__()
         self.name = 'ManualTextAgent'
         self.config = self.get_config()
-        self.move_dict = {'r': 'right', 'l': 'left', 'u': 'up', 'd': 'down'}
 
     def run(self, game_display):
-        game = GameState(size=self.config['size'])
+        game = Env2048(size=self.config['size'])
         game_display.show(game)
-        while not game.lost:
-            move = input('Enter a move (l, r, u, d): ')
-            if move not in self.move_dict.keys():
+        while not game._episode_ended:
+            action = int(input('Enter a move (0,1,2,3): '))
+            if action < 0 or action > 3:
                 break
-            game.move(self.move_dict[move])
+            game._step(action)
             game_display.show(game)
