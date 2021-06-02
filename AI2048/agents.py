@@ -20,7 +20,7 @@ class Agent:
 
     @abstractmethod
     def run(self, game_display):
-        ''' Plays the game based on configuration file '''
+        ''' Plays/learns the game based on configuration file and updates given display '''
         pass
 
 
@@ -40,3 +40,16 @@ class ManualTextAgent(Agent):
                 break
             game._step(action)
             game_display.show(game)
+
+
+class KeyboardAgent(Agent):
+    ''' Agents for play from keyboard input '''
+    def __init__(self):
+        super(KeyboardAgent, self).__init__()
+        self.name = 'KeyboardAgent'
+        self.config = self.get_config()
+
+    def run(self, game_display):
+        game = Env2048(size=self.config['size'])
+        # give game to display (needed to get key presses)
+        game_display.run(game)

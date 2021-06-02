@@ -17,7 +17,7 @@ COLOR_DICT = {2: '#c3c8c9',
               256: '#c7cc49',
               512: '#8fcc49',
               1024: '#1d4c22',
-              2048: 'dd6a6c'}
+              2048: '#dd6a6c'}
 
 STYLE_DICT = {2: 'T2.TLabel',
               4: 'T4.TLabel',
@@ -54,6 +54,7 @@ class GameWindow(ttk.Frame):
         self.rowconfigure(1, weight=50)
 
         self.root.update_idletasks()
+        self.game = None # useful for KeyboardAgent
 
     def _start(self):
         ''' Starts the game/simulation based on agent and configuration '''
@@ -67,11 +68,28 @@ class GameWindow(ttk.Frame):
         self.root.update_idletasks()
         agent.run(self)
 
+    def _key_in(self, event):
+        ''' Takes input from the keyboard and manipulates the current game '''
+        if self.game is None:
+            self.root.quit()
+        key_to_action = {'Left': 0, 'Up': 1, 'Right': 2, 'Down': 3}
+        if self.game._episode_ended:
+            return
+        action = key_to_action[event.keysym]
+        self.game._step(action)
+        self.show(self.game)
+
     def show(self, game_state):
         ''' Displays the given state in the window '''
         self.board.set_board(game_state._state)
         self.navbar.set_score(game_state.score)
         self.root.update_idletasks()
+
+    def run(self, game):
+        ''' Runs a game from keyboard input '''
+        self.root.bind('<Key>', self._key_in)
+        self.game = game
+        self.show(game)
 
 
 class NavBar(ttk.Frame):
