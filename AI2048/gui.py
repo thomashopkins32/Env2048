@@ -7,17 +7,17 @@ import importlib
 from AI2048 import config
 
 
-COLOR_DICT = {2: '#c3c8c9',
-              4: '#67ccf7',
-              8: '#1c4882',
-              16: '#2b1c82',
-              32: '#481c82',
-              64: '#82521c',
-              128: '#b7591b',
-              256: '#c7cc49',
-              512: '#8fcc49',
-              1024: '#1d4c22',
-              2048: '#dd6a6c'}
+COLOR_DICT = {2: '#d9ed92',
+              4: '#b5e48c',
+              8: '#99d98c',
+              16: '#76c893',
+              32: '#52b69a',
+              64: '#34a0a4',
+              128: '#168aad',
+              256: '#1a759f',
+              512: '#1e6091',
+              1024: '#184e77',
+              2048: '#033c57'}
 
 STYLE_DICT = {2: 'T2.TLabel',
               4: 'T4.TLabel',
@@ -141,6 +141,8 @@ class Board(ttk.Frame):
 
     def create_board(self, size):
         self.size = size
+        height = self.winfo_height()
+        width = self.winfo_width()
         for i in range(size):
             self.tile_vars.append([])
             self.tiles.append([])
@@ -150,10 +152,8 @@ class Board(ttk.Frame):
                                                font=('Arial', 20), anchor='center'))
                 self.tile_vars[i][j].set('')
                 self.tiles[i][j].grid(column=j, row=i, sticky=(N, S, E, W))
-        for i in range(size):
-            self.rowconfigure(i, weight=1)
-        for j in range(size):
-            self.columnconfigure(j, weight=1)
+            self.rowconfigure(i, weight=1, minsize=height // size)
+            self.columnconfigure(i, weight=1, minsize=width // size)
 
     def set_board(self, state):
         for i in range(self.size):
@@ -180,5 +180,5 @@ if __name__ == '__main__':
     s = ttk.Style()
     for num, stylename in STYLE_DICT.items():
         s.configure(stylename, background=COLOR_DICT[num])
-    s.configure('TLarge.TLabel', background='#190202')
+    s.configure('TLarge.TLabel', background='#033c57')
     root.mainloop()

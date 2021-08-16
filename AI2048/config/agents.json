@@ -1,1 +1,1 @@
-{"types": ["ManualTextAgent", "KeyboardAgent"]}
+{"types": ["ManualTextAgent", "KeyboardAgent", "RandomAgent"]}

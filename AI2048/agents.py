@@ -1,5 +1,7 @@
 from abc import abstractmethod
 
+import numpy as np
+
 from AI2048 import config
 from AI2048.game import Env2048
 
@@ -53,3 +55,19 @@ class KeyboardAgent(Agent):
         game = Env2048(size=self.config['size'])
         # give game to display (needed to get key presses)
         game_display.run(game)
+
+
+class RandomAgent(Agent):
+    ''' Agent that chooses actions randomly '''
+    def __init__(self):
+        super(RandomAgent, self).__init__()
+        self.name = 'RandomAgent'
+        self.config = self.get_config()
+
+    def run(self, game_display):
+        game = Env2048(size=self.config['size'])
+        game_display.show(game)
+        while not game._episode_ended:
+            action = np.random.randint(0, 4)
+            game._step(action)
+            game_display.show(game)
