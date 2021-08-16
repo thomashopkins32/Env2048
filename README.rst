@@ -17,4 +17,6 @@ Collection of intelligent algorithms that attempt to beat the game 2048.
 Features
 --------
 
-* TODO
+* Any size game board
+* Play manually from the keyboard
+* Interactive GUI for selecting different agents
