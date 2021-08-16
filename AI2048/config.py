@@ -1,4 +1,4 @@
-import json
+import yaml
 
 
 def read(filename):
@@ -16,7 +16,7 @@ def read(filename):
         config variables mapped to their values
     '''
     with open(filename, 'r') as config_file:
-        config = json.load(config_file)
+        config = yaml.safe_load(config_file)
     return config
 
 
@@ -32,7 +32,7 @@ def write(filename, config_dict):
         config variables to write
     '''
     with open(filename, 'w') as config_file:
-        json.dump(config_dict, config_file)
+        yaml.dump(config_dict, config_file)
 
 
 def append(filename, config_dict):
@@ -49,4 +49,4 @@ def append(filename, config_dict):
     cfg = read(filename)
     cfg.update(config_dict)
     with open(filename, 'w') as config_file:
-        json.dump(config_dict, config_file)
+        yaml.dump(config_dict, config_file)

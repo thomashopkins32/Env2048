@@ -112,7 +112,7 @@ class NavBar(ttk.Frame):
 
         self.selected_agent = tk.StringVar()
         self.agent_combo = ttk.Combobox(self, textvariable=self.selected_agent)
-        all_agents = config.read('./config/agents.json')
+        all_agents = config.read('./config/agents.yml')
         agents = tuple(all_agents['types'])
         self.agent_combo['values'] = agents
         self.agent_combo.state(['readonly'])

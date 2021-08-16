@@ -1,0 +1,4 @@
+types:
+  - ManualTextAgent
+  - KeyboardAgent
+  - RandomAgent

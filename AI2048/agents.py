@@ -18,7 +18,7 @@ class Agent:
         return self.name
 
     def get_config(self):
-        return config.read(f'./config/{self.name}.json')
+        return config.read(f'./config/{self.name}.yml')
 
     @abstractmethod
     def run(self, game_display):
