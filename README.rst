@@ -21,7 +21,9 @@ To try it out yourself:
 .. code-block:: bash
 
     $ git clone https://github.com/thomashopkins32/2048AI.git
-    $ cd 2048AI/AI2048
+    $ cd 2048AI
+    $ pip install -e .
+    $ cd AI2048
     $ python gui.py
     
 For manual play, select ``ManualTextAgent`` or ``KeyboardAgent`` from the drop-down menu and hit ``Start``.
