@@ -2,3 +2,4 @@ types:
   - ManualTextAgent
   - KeyboardAgent
   - RandomAgent
+  - DQNAgent
