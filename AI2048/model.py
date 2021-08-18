@@ -1,3 +1,6 @@
+from collections import namedtuple
+import random
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -36,12 +39,12 @@ class DQN(nn.Module):
     def __init__(self, game_size):
         super(DQN, self).__init__()
         self.size = game_size
-        self.l1 = nn.Linear(self.size*self.size, 64)
-        self.l2 = nn.Linear(64, 32)
-        self.l3 = nn.Linear(32, 4)
+        self.l1 = nn.Linear(self.size*self.size, 16)
+        self.l2 = nn.Linear(16, 8)
+        self.l3 = nn.Linear(8, 4)
 
     def forward(self, state):
-        x = state.flatten()
+        x = state.reshape(-1, self.size*self.size)
         x = F.relu(self.l1(x))
         x = F.relu(self.l2(x))
         return self.l3(x)
