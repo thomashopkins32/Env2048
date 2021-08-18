@@ -191,9 +191,12 @@ class DQNAgent(Agent):
                                               device=self.device)
                 else:
                     next_state = None
-                reward = float(transition.reward)
+                # skip actions that produce no change, otherwise these
+                # could make up a large portion of the replay memory
+                # leading the network astray
                 if not done and torch.equal(state, next_state):
-                     reward = -1.0
+                    continue
+                reward = float(transition.reward)
                 accumulated_reward += reward
                 reward = torch.tensor([reward], device=self.device)
 
@@ -236,10 +239,17 @@ class DQNAgent(Agent):
     def eval(self, game_display):
         game = Env2048(size=self.config['size'])
         game_display.show(game)
+        state = torch.tensor([game._state], dtype=torch.float).to(self.device)
         while not game._episode_ended:
-            state = torch.tensor(game._state, dtype=torch.float).to(self.device)
             action_vals = self.model(state)
-            action = torch.argmax(action_vals).item()
-            transition = game._step(action)
+            top_actions = torch.topk(action_vals, 4).indices[0]
+            for i in range(4):
+                action = top_actions[i].item()
+                game._step(action)
+                next_state = torch.tensor([game._state], dtype=torch.float,
+                                          device=self.device)
+                if game._episode_ended or not torch.equal(state, next_state):
+                    state = next_state
+                    break
             game_display.show(game)
             time.sleep(0.25)
