@@ -147,7 +147,7 @@ class DQNAgent(Agent):
             param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
 
-    def select_eps_greedy(self, state):
+    def perform_eps_greedy_action(self, state, game):
         sample = np.random.random()
         eps_end = self.config['eps_end']
         eps_start = self.config['eps_start']
@@ -156,12 +156,32 @@ class DQNAgent(Agent):
             np.exp(-1. * self.episode / eps_decay)
         if sample > eps_threshold:
             with torch.no_grad():
-                action = torch.argmax(self.model(state)).view(1, 1)
-                return action
+                action_vals = self.model(state)
+                top_actions = torch.topk(action_vals, 4).indices[0]
+                for i in range(4):
+                    action = top_actions[i].view(1, 1)
+                    transition = game._step(action.item())
+                    if game._episode_ended:
+                        next_state = None
+                    else:
+                        next_state = torch.tensor([game._state], dtype=torch.float,
+                                                  device=self.device)
+                    if game._episode_ended or not torch.equal(state, next_state):
+                        break
+
         else:
-            return torch.tensor([[np.random.randint(0, 4)]],
-                                device=self.device,
-                                dtype=torch.long)
+            next_state = state
+            while not game._episode_ended and torch.equal(state, next_state):
+                action = torch.tensor([[np.random.randint(0, 4)]],
+                                      device=self.device,
+                                      dtype=torch.long)
+                transition = game._step(action.item())
+                if game._episode_ended:
+                    next_state = None
+                else:
+                    next_state = torch.tensor([game._state], dtype=torch.float,
+                                              device=self.device)
+        return action, next_state, float(transition.reward)
 
     def train(self, game_display):
         size = self.config['size']
@@ -180,36 +200,20 @@ class DQNAgent(Agent):
             state = torch.tensor([game._state], dtype=torch.float,
                                  device=self.device)
             next_state = None
+            cumulative_reward = 0
             duration = 0
-            accumulated_reward = 0
-            while not game._episode_ended:
-                action = self.select_eps_greedy(state)
-                transition = game._step(action.item())
-                done = game._episode_ended
-                if not done:
-                    next_state = torch.tensor([game._state], dtype=torch.float,
-                                              device=self.device)
-                else:
-                    next_state = None
-                # skip actions that produce no change, otherwise these
-                # could make up a large portion of the replay memory
-                # leading the network astray
-                if not done and torch.equal(state, next_state):
-                    continue
-                reward = float(transition.reward)
-                accumulated_reward += reward
+            while True:
+                action, next_state, reward = self.perform_eps_greedy_action(state, game)
+                cumulative_reward += reward
                 reward = torch.tensor([reward], device=self.device)
 
                 self.memory.push(state, action, next_state, reward)
-
                 state = next_state
-
                 self.optimize()
-
                 duration += 1
-                if done:
+                if game._episode_ended:
                     self.durations.append(duration)
-                    self.rewards.append(accumulated_reward)
+                    self.rewards.append(game.score)
                     break
             if self.episode % target_update == 0:
                 self.target.load_state_dict(self.model.state_dict())
@@ -220,8 +224,8 @@ class DQNAgent(Agent):
         print('Model Saved')
         fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
         ax1.plot(range(len(self.rewards)), self.rewards)
-        ax1.set_title('Cumulative reward per episode')
-        ax1.set_ylabel('Cumulative reward')
+        ax1.set_title('Game score per episode')
+        ax1.set_ylabel('Score')
         ax1.set_xlabel('Episode')
         ax2.plot(range(len(self.durations)), self.durations)
         ax2.set_title('Game duration per episode')
@@ -244,6 +248,8 @@ class DQNAgent(Agent):
             action_vals = self.model(state)
             top_actions = torch.topk(action_vals, 4).indices[0]
             for i in range(4):
+                if i > 0:
+                    print('Got stuck, continuing with next best action...')
                 action = top_actions[i].item()
                 game._step(action)
                 next_state = torch.tensor([game._state], dtype=torch.float,

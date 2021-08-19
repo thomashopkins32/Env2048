@@ -3,12 +3,12 @@ ckpt_path: null
 train: True
 device: cpu
 learning_rate: 0.0005
-batch_size: 256
+batch_size: 64
 discount: 0.9
-eps_end: 0.05
-eps_start: 0.9
+eps_end: 0.01
+eps_start: 0.99
 eps_decay: 200
-target_update: 50
+target_update: 100
 num_episodes: 1000
-memory_size: 10000
+memory_size: 1000
 show_plots: True
