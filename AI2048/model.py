@@ -39,8 +39,8 @@ class DQN(nn.Module):
     def __init__(self, game_size):
         super(DQN, self).__init__()
         self.size = game_size
-        self.l1 = nn.Linear(self.size*self.size, 16)
-        self.l2 = nn.Linear(16, 8)
+        self.l1 = nn.Linear(self.size*self.size, 8)
+        self.l2 = nn.Linear(8, 8)
         self.l3 = nn.Linear(8, 4)
 
     def forward(self, state):

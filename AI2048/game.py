@@ -119,7 +119,7 @@ class Env2048(py_environment.PyEnvironment):
             return ts.transition(np.array(self._state, dtype=np.int32),
                                  reward=-1.0, discount=1.0)
         if self._episode_ended:
-            return ts.termination(np.array(self._state, dtype=np.int32), -1000.0)
+            return ts.termination(np.array(self._state, dtype=np.int32), -100.0)
         # add tile
         self._add_tile()
         return ts.transition(np.array(self._state, dtype=np.int32), reward=reward, discount=1.0)

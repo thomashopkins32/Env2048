@@ -97,10 +97,10 @@ class DQNAgent(Agent):
         training = self.config['train']
         self.model = DQN(self.config['size']).to(self.device)
 
-
         if training:
             self.optimizer = optim.RMSprop(self.model.parameters(),
-                                           lr=self.config['learning_rate'])
+                                           lr=self.config['learning_rate'],
+                                           momentum=0.9)
             self.target = DQN(self.config['size']).to(self.device)
             if ckpt_path is not None:
                 checkpoint = torch.load(ckpt_path)
