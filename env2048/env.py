@@ -36,7 +36,7 @@ class Env2048(gym.Env):
         self.window = None
         self.clock = None
         self.score = 0
-        self.done = False
+        self.game_over = False
         self.reward_type = reward_type
 
         self._color_dict = {0: (255, 255, 255),
@@ -84,19 +84,19 @@ class Env2048(gym.Env):
             for j in range(self.size):
                 # left
                 if j-1 >= 0:
-                    if self._state[i][j] == self._state[i][j-1]:
+                    if self._state[i, j] == self._state[i, j-1]:
                         return False
                 # right
                 if j+1 < self.size:
-                    if self._state[i][j] == self._state[i][j+1]:
+                    if self._state[i, j] == self._state[i, j+1]:
                         return False
                 # up
                 if i-1 >= 0:
-                    if self._state[i][j] == self._state[i-1][j]:
+                    if self._state[i, j] == self._state[i-1, j]:
                         return False
                 # down
                 if i+1 < self.size:
-                    if self._state[i][j] == self._state[i+1][j]:
+                    if self._state[i, j] == self._state[i+1, j]:
                         return False
         return True
 
@@ -112,7 +112,7 @@ class Env2048(gym.Env):
         self._state : np.array
             adds a new tile to the current state
         '''
-        if self.done:
+        if self.game_over:
             return
         possible_tiles = np.argwhere(self._state == 0)
         random_idx = np.random.randint(0, possible_tiles.shape[0])
@@ -225,7 +225,7 @@ class Env2048(gym.Env):
         self._add_tile()
         self._add_tile()
         self.score = 0
-        self.done = False
+        self.game_over = False
 
         observation = self._get_obs()
         info = self._get_info()
@@ -266,7 +266,7 @@ class Env2048(gym.Env):
         info : dict
             Additional info about state of the board
         '''
-        if self.done:
+        if self.game_over:
             return self._get_obs(), 0.0, True, self._get_info()
 
         # copy state to check when action does nothing
@@ -282,9 +282,8 @@ class Env2048(gym.Env):
         # check for change in state
         changed = not np.array_equal(prev_state, self._state)
 
-        # no need to check if no change in state
-        if changed:
-            self.done = self._is_lost()
+        # check if game is over
+        self.game_over = self._is_lost()
 
         # update score
         self.score += score_change
@@ -302,7 +301,7 @@ class Env2048(gym.Env):
                 reward = 10.0
             else:
                 reward = 0.0
-        if self.done:
+        if self.game_over:
             reward = 0.0
 
         # only add a new tile if the game state changed
@@ -313,7 +312,7 @@ class Env2048(gym.Env):
         info = self._get_info()
         info['changed'] = changed
 
-        return self._get_obs(), reward, self.done, info
+        return self._get_obs(), reward, self.game_over, info
 
     def render(self, mode="human"):
         '''
