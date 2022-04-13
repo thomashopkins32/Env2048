@@ -34,7 +34,7 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
 
 
 setup(
-    name='Env2048',
+    name='env2048',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="OpenAI Gym environment for the game 2048!",
@@ -51,7 +51,7 @@ setup(
     },
     include_package_data=True,
     package_data={
-        'Env2048': [
+        'env2048': [
             # When adding files here, remember to update MANIFEST.in as well,
             # or else they will not be included in the distribution on PyPI!
             # 'path/to/data_file',
