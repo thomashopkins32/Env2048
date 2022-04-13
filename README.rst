@@ -1,17 +1,17 @@
 ======
-2048AI
+Env2048
 ======
 
-Collection of intelligent algorithms that attempt to beat the game 2048.
+OpenAI Gym environment for the game 2048!
 
 * Free software: 3-clause BSD license
 
 Features
 --------
 
-* Any size game board
-* Play manually from the keyboard
-* Interactive GUI for selecting different agents
+* Any size game board!
+* `render()` support!
+* Different reward types!
 
 Installation
 ------------
@@ -20,14 +20,23 @@ To try it out yourself:
 
 .. code-block:: bash
 
-    $ git clone https://github.com/thomashopkins32/2048AI.git
-    $ cd 2048AI
-    $ pip install -e .
-    $ cd AI2048
-    $ python gui.py
-    
-For manual play, select ``ManualTextAgent`` or ``KeyboardAgent`` from the drop-down menu and hit ``Start``.
+    $ git clone https://github.com/thomashopkins32/Env2048.git
+    $ cd Env2048
+    $ pip install .
 
-Choose other agents for AI solutions to the game.
+Example Usage
+-------------
 
-Configure various game, learning, and other parameters by editing the ``config/{Agent}.yml`` file.
+Here is an example using random actions:
+
+.. code-block:: python3
+
+   from env2048.env import Env2048
+   env = Env2048()
+   observation = env.reset()
+   env.render()
+   done = False
+   while not done:
+        action = env.action_space.sample()
+        observation, reward, done, info = env.step(a)
+        env.render()
