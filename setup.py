@@ -10,7 +10,7 @@ import versioneer
 min_version = (3, 6)
 if sys.version_info < min_version:
     error = """
-2048AI does not support Python {0}.{1}.
+Env2048 does not support Python {0}.{1}.
 Python {2}.{3} and above is required. Check your Python version like so:
 
 python3 --version
@@ -34,14 +34,14 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
 
 
 setup(
-    name='AI2048',
+    name='Env2048',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    description="Collection of intelligent algorithms that attempt to beat the game 2048.",
+    description="OpenAI Gym environment for the game 2048!",
     long_description=readme,
     author="Thomas Hopkins",
     author_email='thomashopkins000@gmail.com',
-    url='https://github.com/thomashopkins32/2048AI',
+    url='https://github.com/thomashopkins32/Env2048',
     python_requires='>={}'.format('.'.join(str(n) for n in min_version)),
     packages=find_packages(exclude=['docs', 'tests']),
     entry_points={
@@ -51,7 +51,7 @@ setup(
     },
     include_package_data=True,
     package_data={
-        'AI2048': [
+        'Env2048': [
             # When adding files here, remember to update MANIFEST.in as well,
             # or else they will not be included in the distribution on PyPI!
             # 'path/to/data_file',
