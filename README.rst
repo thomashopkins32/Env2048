@@ -24,14 +24,19 @@ To try it out yourself:
     $ cd Env2048
     $ pip install .
 
-Then from in your Python script use:
+Example Usage
+-------------
 
-.. code-block:: python
+Here is an example using random actions:
+
+.. code-block:: python3
 
    from env2048.env import Env2048
    env = Env2048()
    observation = env.reset()
+   env.render()
    done = False
    while not done:
         action = env.action_space.sample()
         observation, reward, done, info = env.step(a)
+        env.render()
