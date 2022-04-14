@@ -43,7 +43,7 @@ setup(
     author_email='thomashopkins000@gmail.com',
     url='https://github.com/thomashopkins32/Env2048',
     python_requires='>={}'.format('.'.join(str(n) for n in min_version)),
-    packages=find_packages(exclude=['docs', 'tests']),
+    packages=find_packages(exclude=['docs', 'tests', 'experiments']),
     entry_points={
         'console_scripts': [
             # 'command = some.module:some_function',
