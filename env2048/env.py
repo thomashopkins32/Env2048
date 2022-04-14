@@ -227,6 +227,7 @@ class Env2048(gym.Env):
         self._add_tile()
         self.score = 0
         self.game_over = False
+        self._curr_max = 2
 
         observation = self._get_obs()
         info = self._get_info()
