@@ -38,6 +38,7 @@ class Env2048(gym.Env):
         self.score = 0
         self.game_over = False
         self.reward_type = reward_type
+        self._curr_max = 0
 
         self._color_dict = {0: (255, 255, 255),
                             2: (238, 228, 218),
@@ -297,8 +298,10 @@ class Env2048(gym.Env):
         elif self.reward_type == 'score':
             reward = score_change
         elif self.reward_type == 'milestone':
-            if np.max(self._state) > self._curr_max:
+            cmax = np.max(self._state)
+            if cmax > self._curr_max:
                 reward = 10.0
+                self._curr_max = cmax
             else:
                 reward = 0.0
         if self.game_over:
