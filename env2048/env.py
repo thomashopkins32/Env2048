@@ -27,7 +27,7 @@ class Env2048(gym.Env):
         self.size = size
         self.window_size = 512 # PyGame window size
 
-        # set of possible actions {0: left, 1: right, 2: up, 3: down}
+        # set of possible actions {0: left, 1: up, 2: right, 3: down}
         # highest possible tile is 2 ** 17 according to Wikipedia
         self.observation_space = spaces.Box(low=0, high=float('inf'),
                                             shape=(self.size, self.size),
@@ -76,30 +76,43 @@ class Env2048(gym.Env):
         bool
             True if a merge or flush is possible
             False otherwise
+        mask : np.array
+            binary mask for moves that can change state
         '''
-        if np.count_nonzero(self._state == 0) > 0:
-            return False
         # check for adjacent matching
         # tiles in 4 directions at each tile
+        lost = True
+        mask = np.zeros((4,), dtype=int)
         for i in range(self.size):
             for j in range(self.size):
-                # left
-                if j-1 >= 0:
-                    if self._state[i, j] == self._state[i, j-1]:
-                        return False
-                # right
-                if j+1 < self.size:
-                    if self._state[i, j] == self._state[i, j+1]:
-                        return False
-                # up
-                if i-1 >= 0:
-                    if self._state[i, j] == self._state[i-1, j]:
-                        return False
-                # down
-                if i+1 < self.size:
-                    if self._state[i, j] == self._state[i+1, j]:
-                        return False
-        return True
+                if self._state[i, j] != 0:
+                    # left
+                    if j-1 >= 0:
+                        if (self._state[i, j] == self._state[i, j-1] or
+                            self._state[i, j-1] == 0):
+                            lost = False
+                            mask[0] = 1
+                    # up
+                    if i-1 >= 0:
+                        if (self._state[i, j] == self._state[i-1, j] or
+                            self._state[i-1, j] == 0):
+                            lost = False
+                            mask[1] = 1
+                    # right
+                    if j+1 < self.size:
+                        if (self._state[i, j] == self._state[i, j+1] or
+                            self._state[i, j+1] == 0):
+                            lost = False
+                            mask[2] = 1
+                    # down
+                    if i+1 < self.size:
+                        if (self._state[i, j] == self._state[i+1, j] or
+                            self._state[i+1, j] == 0):
+                            lost = False
+                            mask[3] = 1
+                else:
+                    lost = False
+        return lost, mask
 
     def _add_tile(self):
         '''
@@ -113,7 +126,7 @@ class Env2048(gym.Env):
         self._state : np.array
             adds a new tile to the current state
         '''
-        if self.game_over:
+        if np.count_nonzero(self._state == 0) == 0:
             return
         possible_tiles = np.argwhere(self._state == 0)
         random_idx = np.random.randint(0, possible_tiles.shape[0])
@@ -284,9 +297,6 @@ class Env2048(gym.Env):
         # check for change in state
         changed = not np.array_equal(prev_state, self._state)
 
-        # check if game is over
-        self.game_over = self._is_lost()
-
         # update score
         self.score += score_change
 
@@ -309,12 +319,17 @@ class Env2048(gym.Env):
             reward = 0.0
 
         # only add a new tile if the game state changed
+        # this method handles game over on its own
         if changed:
             self._add_tile()
+        
+        # check if game is over
+        self.game_over, action_mask = self._is_lost()
 
         # add info about change in state
         info = self._get_info()
         info['changed'] = changed
+        info['action_mask'] = action_mask
 
         return self._get_obs(), reward, self.game_over, info
 
